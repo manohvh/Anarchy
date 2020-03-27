@@ -1,0 +1,271 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{18C13E5D-D4D2-4310-993C-2F2644DB8D54}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Discord</RootNamespace>
+    <AssemblyName>Anarchy</AssemblyName>
+    <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet />
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Leaf.xNet, Version=5.1.88.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\Debug\Leaf.xNet.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\..\Liquid\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json.Schema, Version=3.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.Schema.3.0.11\lib\net45\Newtonsoft.Json.Schema.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+    <Reference Include="websocket-sharp-with-proxy-support">
+      <HintPath>bin\Debug\websocket-sharp-with-proxy-support.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Commands\Command.cs" />
+    <Compile Include="Commands\CommandAttribute.cs" />
+    <Compile Include="Commands\CommandHandler.cs" />
+    <Compile Include="Gateway\Auth\Extensions.cs" />
+    <Compile Include="Gateway\Auth\Models\LoginGuild.cs" />
+    <Compile Include="Gateway\GuildMember\Extensions.cs" />
+    <Compile Include="Gateway\GuildMember\Models\MemberAmount.cs" />
+    <Compile Include="Gateway\Presence\Activity\GameActivity.cs" />
+    <Compile Include="Gateway\Presence\Activity\StreamActivity.cs" />
+    <Compile Include="REST\Billing\BillingAddress.cs" />
+    <Compile Include="REST\Billing\Extensions.cs" />
+    <Compile Include="REST\Billing\Payment.cs" />
+    <Compile Include="REST\Billing\PaymentMethod.cs" />
+    <Compile Include="REST\Channel\Channel\MinimalChannel.cs" />
+    <Compile Include="REST\Channel\Channel\MessageChannel.cs" />
+    <Compile Include="REST\Channel\Channel\MinimalTextChannel.cs" />
+    <Compile Include="REST\Gifts\DiscordGift.cs" />
+    <Compile Include="REST\Gifts\DiscordGiftCode.cs" />
+    <Compile Include="REST\Gifts\GiftsExtensions.cs" />
+    <Compile Include="REST\Gifts\PurchaseOptions.cs" />
+    <Compile Include="REST\Guild\Guild\MinimalGuild.cs" />
+    <Compile Include="REST\HTTP\InvalidTokenException.cs" />
+    <Compile Include="Multi\Controllable\ControllableEx.cs" />
+    <Compile Include="Multi\Models\InvalidConvertionException.cs" />
+    <Compile Include="REST\Channel\Channel\Extensions.cs" />
+    <Compile Include="REST\Channel\Guild\Guild\CreationProperties.cs" />
+    <Compile Include="REST\Channel\Guild\Extensions.cs" />
+    <Compile Include="REST\Channel\Private\DM\Extensions.cs" />
+    <Compile Include="REST\Channel\Private\Group\Group.cs" />
+    <Compile Include="REST\Channel\Guild\Text\TextChannel.cs" />
+    <Compile Include="REST\Channel\Guild\Voice\VoiceChannel.cs" />
+    <Compile Include="REST\Channel\Private\Group\Extensions.cs" />
+    <Compile Include="REST\Channel\Private\Group\GroupProperties.cs" />
+    <Compile Include="REST\Channel\Private\DM\RecipientList.cs" />
+    <Compile Include="REST\Channel\Guild\Guild\GuildChannelProperties.cs" />
+    <Compile Include="REST\Channel\Guild\Text\TextChannelProperties.cs" />
+    <Compile Include="REST\Channel\Guild\Voice\VoiceChannelProperties.cs" />
+    <Compile Include="REST\Discovery\DiscoveryGuild.cs" />
+    <Compile Include="REST\Discovery\Extensions.cs" />
+    <Compile Include="REST\Embed\EmbedError.cs" />
+    <Compile Include="REST\Embed\EmbedException.cs" />
+    <Compile Include="REST\Invite\Models\InviteType.cs" />
+    <Compile Include="REST\Message\Message\ChannelMention.cs" />
+    <Compile Include="REST\Nitro\Extensions.cs" />
+    <Compile Include="REST\Nitro\Models\DiscordNitroGift.cs" />
+    <Compile Include="REST\Nitro\Models\NitroBoost.cs" />
+    <Compile Include="REST\Nitro\Models\NitroSubscriptionPlan.cs" />
+    <Compile Include="REST\OAuth2\Models\ApplicationBot.cs" />
+    <Compile Include="REST\OAuth2\Models\AuthorizedApp.cs" />
+    <Compile Include="REST\OAuth2\Models\OAuth2Application.cs" />
+    <Compile Include="REST\OAuth2\Extensions.cs" />
+    <Compile Include="REST\Relationship\Models\RelationshipEventArgs.cs" />
+    <Compile Include="REST\Role\Models\MinimalRole.cs" />
+    <Compile Include="REST\User\Connections\Extensions.cs" />
+    <Compile Include="REST\User\Profile\DiscordBadge.cs" />
+    <Compile Include="REST\Invite\Models\GroupInvite.cs" />
+    <Compile Include="REST\Message\Message\MessageFilters.cs" />
+    <Compile Include="REST\Permissions\Overwrite\Type.cs" />
+    <Compile Include="REST\Channel\Private\DM\DMChannel.cs" />
+    <Compile Include="REST\Emoji\Emoji\EmojiContainer.cs" />
+    <Compile Include="REST\Emoji\Emoji\UpdatedEventArgs.cs" />
+    <Compile Include="REST\Emoji\Emoji\PartialEmoji.cs" />
+    <Compile Include="Gateway\Auth\Models\Resume.cs" />
+    <Compile Include="REST\GuildMember\Extensions.cs" />
+    <Compile Include="REST\GuildMember\Models\GuildMemberProperties.cs" />
+    <Compile Include="REST\Message\UserTyping\UserTyping.cs" />
+    <Compile Include="REST\Message\UserTyping\EventArgs.cs" />
+    <Compile Include="Gateway\Voice\Extensions.cs" />
+    <Compile Include="Gateway\Voice\Models\VoiceState.cs" />
+    <Compile Include="Gateway\Voice\Models\VoiceStateChange.cs" />
+    <Compile Include="REST\Guild\Ban\UpdateEventArgs.cs" />
+    <Compile Include="REST\Guild\Ban\BanContainer.cs" />
+    <Compile Include="REST\Guild\Guild\PartialGuild.cs" />
+    <Compile Include="REST\GuildMember\EventArgs\MemberEventArgs.cs" />
+    <Compile Include="REST\GuildMember\Models\GuildMemberUpdate.cs" />
+    <Compile Include="REST\GuildMember\EventArgs\MembersEventArgs.cs" />
+    <Compile Include="REST\HTTP\DiscordError.cs" />
+    <Compile Include="REST\HTTP\DiscordHttpException.cs" />
+    <Compile Include="REST\HTTP\DiscordHttpError.cs" />
+    <Compile Include="REST\Invite\Models\Invite.cs" />
+    <Compile Include="REST\Message\Deleted\DeletedMessage.cs" />
+    <Compile Include="REST\Message\Deleted\EventArgs.cs" />
+    <Compile Include="REST\Message\Reaction\Update.cs" />
+    <Compile Include="REST\Message\Reaction\ReactionEventArgs.cs" />
+    <Compile Include="Multi\Models\DiscordTimestamp.cs" />
+    <Compile Include="Gateway\Presence\Activity\Activity.cs" />
+    <Compile Include="Gateway\Presence\Activity\Timestamps.cs" />
+    <Compile Include="Gateway\Presence\Activity\Type.cs" />
+    <Compile Include="REST\AuditLog\Extensions.cs" />
+    <Compile Include="REST\AuditLog\Models\ActionType.cs" />
+    <Compile Include="REST\AuditLog\Models\Change.cs" />
+    <Compile Include="REST\AuditLog\Models\Entry.cs" />
+    <Compile Include="REST\AuditLog\Models\Filters.cs" />
+    <Compile Include="REST\Channel\Channel\Channel.cs" />
+    <Compile Include="REST\Channel\Channel\ChannelEventArgs.cs" />
+    <Compile Include="REST\Channel\Channel\Properties\ChannelProperties.cs" />
+    <Compile Include="Gateway\Auth\Models\LoginEventArgs.cs" />
+    <Compile Include="REST\Guild\Ban\Ban.cs" />
+    <Compile Include="REST\Guild\Models\PremiumTier.cs" />
+    <Compile Include="REST\Guild\Guild\BaseGuild.cs" />
+    <Compile Include="REST\Guild\Guild\SocketGuild.cs" />
+    <Compile Include="REST\Embed\Author.cs" />
+    <Compile Include="REST\Embed\Field.cs" />
+    <Compile Include="REST\Embed\Footer.cs" />
+    <Compile Include="REST\Embed\EmbedMaker.cs" />
+    <Compile Include="REST\Embed\Video.cs" />
+    <Compile Include="REST\Guild\Models\GuildEventArgs.cs" />
+    <Compile Include="REST\GuildMember\Models\GuildMemberList.cs" />
+    <Compile Include="Gateway\Gateway\Models\Opcode.cs" />
+    <Compile Include="REST\User\Connections\AccountType.cs" />
+    <Compile Include="REST\User\Connections\ConnectedAccount.cs" />
+    <Compile Include="REST\User\Profile\MutualGuild.cs" />
+    <Compile Include="REST\User\Profile\DiscordProfile.cs" />
+    <Compile Include="REST\Role\Models\RoleContainer.cs" />
+    <Compile Include="Gateway\GuildMember\Models\MemberQuery.cs" />
+    <Compile Include="REST\Guild\Models\DefaultNotifications.cs" />
+    <Compile Include="REST\Guild\Properties\GuildProperties.cs" />
+    <Compile Include="REST\Message\Reaction\MessageReaction.cs" />
+    <Compile Include="REST\Message\Message\MessageType.cs" />
+    <Compile Include="REST\Permissions\EditablePermissions.cs" />
+    <Compile Include="REST\Permissions\Permissions.cs" />
+    <Compile Include="Multi\Models\Property.cs" />
+    <Compile Include="Gateway\Presence\Extensions.cs" />
+    <Compile Include="Gateway\Presence\Presence\PresenceUpdate.cs" />
+    <Compile Include="Gateway\Presence\Presence\UpdatedEventArgs.cs" />
+    <Compile Include="REST\Relationship\Models\Relationship.cs" />
+    <Compile Include="REST\Relationship\Models\RelationshipType.cs" />
+    <Compile Include="REST\User\Profile\Nitro.cs" />
+    <Compile Include="REST\User\Profile\ProfileUpdatedEventArgs.cs" />
+    <Compile Include="REST\User\Settings\CustomStatus.cs" />
+    <Compile Include="REST\User\Settings\ExplicitContentFilter.cs" />
+    <Compile Include="REST\User\Settings\FriendSourceFlags.cs" />
+    <Compile Include="REST\User\Settings\Language.cs" />
+    <Compile Include="REST\User\Settings\Settings.cs" />
+    <Compile Include="REST\User\Settings\SettingsUpdatedEventArgs.cs" />
+    <Compile Include="REST\User\Settings\Theme.cs" />
+    <Compile Include="REST\User\User\Type.cs" />
+    <Compile Include="REST\Role\Models\Role.cs" />
+    <Compile Include="REST\Role\Models\RoleEventArgs.cs" />
+    <Compile Include="REST\Role\Models\RoleProperties.cs" />
+    <Compile Include="REST\User\User\UserEventArgs.cs" />
+    <Compile Include="REST\User\User\ClientUser.cs" />
+    <Compile Include="REST\User\User\UserListEventArgs.cs" />
+    <Compile Include="REST\HTTP\DiscordHttpClient.cs" />
+    <Compile Include="REST\Guild\Guild\Guild.cs" />
+    <Compile Include="REST\Message\Message\Attachment.cs" />
+    <Compile Include="REST\Embed\Embed.cs" />
+    <Compile Include="REST\Embed\Image.cs" />
+    <Compile Include="Multi\Models\DiscordImage.cs" />
+    <Compile Include="DiscordClient.cs" />
+    <Compile Include="DiscordSocketClient.cs" />
+    <Compile Include="REST\Emoji\Emoji\EmojiProperties.cs" />
+    <Compile Include="Gateway\Voice\Models\VoiceStateEventArgs.cs" />
+    <Compile Include="REST\User\Settings\UserSettings.cs" />
+    <Compile Include="REST\Voice\Extensions.cs" />
+    <Compile Include="REST\Voice\VoiceRegion.cs" />
+    <Compile Include="REST\Webhook\Extensions.cs" />
+    <Compile Include="REST\Webhook\Models\WebhookProfile.cs" />
+    <Compile Include="REST\Webhook\Models\WebhookProperties.cs" />
+    <Compile Include="Multi\Controllable\Controllable.cs" />
+    <Compile Include="Multi\Controllable\Extensions.cs" />
+    <Compile Include="Multi\JsonExtensions.cs" />
+    <Compile Include="REST\Channel\Channel\ChannelType.cs" />
+    <Compile Include="REST\Guild\Models\VerificationLevel.cs" />
+    <Compile Include="REST\User\Profile\Hypesquad.cs" />
+    <Compile Include="REST\Nitro\Models\NitroType.cs" />
+    <Compile Include="REST\User\Profile\Status.cs" />
+    <Compile Include="Multi\Models\DiscordException.cs" />
+    <Compile Include="REST\RateLimit\RateLimitException.cs" />
+    <Compile Include="Gateway\Gateway\Extensions.cs" />
+    <Compile Include="REST\Guild\Extensions.cs" />
+    <Compile Include="REST\Invite\Extensions.cs" />
+    <Compile Include="REST\Message\Extensions.cs" />
+    <Compile Include="REST\Emoji\Extentions.cs" />
+    <Compile Include="REST\Relationship\Extensions.cs" />
+    <Compile Include="REST\Role\Extensions.cs" />
+    <Compile Include="REST\User\Extensions.cs" />
+    <Compile Include="REST\Message\Message\MessageEventArgs.cs" />
+    <Compile Include="Gateway\Auth\Models\Login.cs" />
+    <Compile Include="REST\Channel\Guild\Guild\GuildChannel.cs" />
+    <Compile Include="REST\Channel\Channel\Properties\CreationProperties.cs" />
+    <Compile Include="REST\Invite\Models\InviteProperties.cs" />
+    <Compile Include="Gateway\Auth\Models\Identification.cs" />
+    <Compile Include="Gateway\Presence\Presence\Presence.cs" />
+    <Compile Include="Gateway\Gateway\Models\Request.cs" />
+    <Compile Include="Gateway\Gateway\Models\Response.cs" />
+    <Compile Include="REST\Guild\Properties\CreationProperties.cs" />
+    <Compile Include="REST\Invite\Models\GuildInvite.cs" />
+    <Compile Include="REST\GuildMember\Models\GuildMember.cs" />
+    <Compile Include="REST\Message\Message\Message.cs" />
+    <Compile Include="REST\Message\Message\MessageProperties.cs" />
+    <Compile Include="REST\RateLimit\RateLimit.cs" />
+    <Compile Include="REST\Emoji\Emoji\Emoji.cs" />
+    <Compile Include="REST\User\User\User.cs" />
+    <Compile Include="REST\User\Settings\UserProfile.cs" />
+    <Compile Include="X-Super-Properties\SPUpdatedEventArgs.cs" />
+    <Compile Include="X-Super-Properties\SuperProperties.cs" />
+    <Compile Include="REST\Webhook\Models\Hook.cs" />
+    <Compile Include="REST\Webhook\Models\MessageProperties.cs" />
+    <Compile Include="Multi\Models\InvalidParametersException.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="X-Super-Properties\SPInformation.cs" />
+    <Compile Include="REST\Permissions\PermissionCalculator.cs" />
+    <Compile Include="REST\Permissions\Overwrite\PermissionOverwrite.cs" />
+    <Compile Include="REST\Permissions\Permission.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
