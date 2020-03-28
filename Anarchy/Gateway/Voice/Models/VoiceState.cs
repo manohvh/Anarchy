@@ -15,6 +15,8 @@ namespace Discord.Gateway
 
 
         [JsonProperty("member")]
+        private GuildMember _member;
+
         public GuildMember Member { get; private set; }
 
 
@@ -27,7 +29,8 @@ namespace Discord.Gateway
             {
                 _guildId = value;
 
-                Member.GuildId = _guildId.Value;
+                if (Member != null)
+                    Member.GuildId = _guildId.Value;
             }
         }
 

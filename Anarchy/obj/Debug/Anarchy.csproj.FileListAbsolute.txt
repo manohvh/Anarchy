@@ -26,3 +26,4 @@ C:\Users\edhbu\Downloads\Anarchy-ff471ec32bec54e3a8a460cda09fe83e72db85b9\Anarch
 C:\Users\edhbu\Downloads\Anarchy-ff471ec32bec54e3a8a460cda09fe83e72db85b9\Anarchy-ff471ec32bec54e3a8a460cda09fe83e72db85b9\Anarchy\obj\Debug\Anarchy.csproj.CopyComplete
 C:\Users\edhbu\Downloads\Anarchy-ff471ec32bec54e3a8a460cda09fe83e72db85b9\Anarchy-ff471ec32bec54e3a8a460cda09fe83e72db85b9\Anarchy\obj\Debug\Anarchy.dll
 C:\Users\edhbu\Downloads\Anarchy-ff471ec32bec54e3a8a460cda09fe83e72db85b9\Anarchy-ff471ec32bec54e3a8a460cda09fe83e72db85b9\Anarchy\obj\Debug\Anarchy.pdb
+C:\Users\edhbu\source\repos\Anarchy\Anarchy\obj\Debug\Anarchy.csproj.CoreCompileInputs.cache

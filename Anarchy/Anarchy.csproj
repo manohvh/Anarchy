@@ -75,7 +75,7 @@
     <Compile Include="REST\Channel\Channel\MinimalTextChannel.cs" />
     <Compile Include="REST\Gifts\DiscordGift.cs" />
     <Compile Include="REST\Gifts\DiscordGiftCode.cs" />
-    <Compile Include="REST\Gifts\GiftsExtensions.cs" />
+    <Compile Include="REST\Gifts\Extensions.cs" />
     <Compile Include="REST\Gifts\PurchaseOptions.cs" />
     <Compile Include="REST\Guild\Guild\MinimalGuild.cs" />
     <Compile Include="REST\HTTP\InvalidTokenException.cs" />
@@ -102,6 +102,8 @@
     <Compile Include="REST\Message\Message\ChannelMention.cs" />
     <Compile Include="REST\Nitro\Extensions.cs" />
     <Compile Include="REST\Nitro\Models\DiscordNitroGift.cs" />
+    <Compile Include="REST\Nitro\Models\DiscordNitroSubType.cs" />
+    <Compile Include="REST\Nitro\Models\DiscordNitroSubTypes.cs" />
     <Compile Include="REST\Nitro\Models\NitroBoost.cs" />
     <Compile Include="REST\Nitro\Models\NitroSubscriptionPlan.cs" />
     <Compile Include="REST\OAuth2\Models\ApplicationBot.cs" />

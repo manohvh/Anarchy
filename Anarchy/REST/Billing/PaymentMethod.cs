@@ -42,5 +42,11 @@ namespace Discord
 
         [JsonProperty("default")]
         public bool Default { get; private set; }
+
+
+        public static implicit operator ulong(PaymentMethod instance)
+        {
+            return instance.Id;
+        }
     }
 }

@@ -29,6 +29,6 @@ namespace Discord
 
 
         [JsonProperty("postal_code")]
-        public int PostalCode { get; private set; }
+        public dynamic PostalCode { get; private set; }
     }
 }

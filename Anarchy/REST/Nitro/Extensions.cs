@@ -19,6 +19,12 @@ namespace Discord
         }
 
 
+        public static string PurchaseNitroGift(this DiscordClient client, ulong paymentMethodId, DiscordNitroSubType type)
+        {
+            return client.PurchaseGift(paymentMethodId, type.SkuId, type.SubscriptionPlanId, type.ExpectedAmount);
+        }
+
+
         public static List<NitroBoost> GetNitroBoosts(this DiscordClient client)
         {
             return client.HttpClient.Get("/users/@me/guilds/premium/subscriptions").Deserialize<List<NitroBoost>>();
