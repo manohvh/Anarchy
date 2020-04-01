@@ -6,13 +6,6 @@ namespace Discord
     public static class GuildChannelExtensions
     {
 #pragma warning disable IDE1006
-        private static T getChannel<T>(this DiscordClient client, ulong channelId) where T : GuildChannel
-        {
-            return client.HttpClient.Get($"/channels/{channelId}")
-                                .Deserialize<T>().SetClient(client);
-        }
-
-
         private static Treturn modifyChannel<Treturn, TProperties>(this DiscordClient client, ulong channelId, TProperties properties) where TProperties : GuildChannelProperties where Treturn : GuildChannel
         {
             return client.HttpClient.Patch($"/channels/{channelId}",

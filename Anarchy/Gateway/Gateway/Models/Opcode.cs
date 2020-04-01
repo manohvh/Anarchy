@@ -12,6 +12,7 @@
         RequestGuildMembers,
         InvalidSession,
         Connected,
-        HeartbeatAck
+        HeartbeatAck,
+        RequestGuildMembersUser = 14
     }
 }

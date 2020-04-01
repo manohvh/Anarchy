@@ -32,7 +32,7 @@ namespace Discord
 
 
         [JsonProperty("premium_type")]
-        public NitroType Nitro { get; private set; }
+        public NitroType? Nitro { get; private set; }
 
 
         /// <summary>

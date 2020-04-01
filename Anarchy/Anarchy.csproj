@@ -63,6 +63,8 @@
     <Compile Include="Gateway\Auth\Extensions.cs" />
     <Compile Include="Gateway\Auth\Models\LoginGuild.cs" />
     <Compile Include="Gateway\GuildMember\Extensions.cs" />
+    <Compile Include="Gateway\GuildMember\Models\GatewayUserMemberQuery.cs" />
+    <Compile Include="Gateway\GuildMember\Models\GatewayUserMemberQueryResponse.cs" />
     <Compile Include="Gateway\GuildMember\Models\MemberAmount.cs" />
     <Compile Include="Gateway\Presence\Activity\GameActivity.cs" />
     <Compile Include="Gateway\Presence\Activity\StreamActivity.cs" />

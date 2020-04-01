@@ -1,6 +1,7 @@
 ﻿using Discord.Commands;
 using Leaf.xNet;
 using Newtonsoft.Json.Linq;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using WebSocketSharp;
@@ -181,6 +182,9 @@ namespace Discord.Gateway
                                 User.Update(user);
 
                             OnUserUpdated?.Invoke(this, new UserEventArgs(user));
+                            break;
+                        case "GUILD_MEMBER_LIST_UPDATE":
+                            OnGuildMembersReceived?.Invoke(this, new GuildMembersEventArgs(payload.Deserialize<GatewayUserMemberQueryResponse>()));
                             break;
                         case "GUILD_CREATE":
                             OnJoinedGuild?.Invoke(this, new GuildEventArgs(payload.Deserialize<Guild>().SetClient(this)));
