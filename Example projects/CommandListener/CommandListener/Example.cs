@@ -7,14 +7,12 @@ namespace CommandListener
     [Command("example")]
     public class Example : Command
     {
-        // This can be ignored. All it does is prepare the command context
-        public Example(string[] args, Message message) : base(args, message)
-        { }
-
         // This will be executed whenever the command ;example is sent through a channel
-        public override void Execute()
+        public override void Execute(string[] args, Message message)
         {
-            Console.WriteLine("Author: " + Message.Author.ToString());
+            Console.WriteLine("Author: " + message.Author.ToString());
+
+            message.Channel.SendMessage("alright alright, jeez");
         }
     }
 }

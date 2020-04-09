@@ -58,12 +58,14 @@
         InvalidOAuthAccessToken = 50034,
         InvalidFormBody,
         InvalidAPIVersion = 50041,
+        InvalidPaymentMethod = 50048,
         NitroGiftRedeemed = 50050,
         InvalidGuild = 50055,
         GuildSubscriptionCooldown = 50069,
         IncomingFriendRequestsDisabled = 80000,
         InvalidDiscriminator = 80004,
         ReactionBlocked = 90001,
+        PaymentRequiresAuthentication = 100029,
         ResourceOverloaded = 130000
     }
 }

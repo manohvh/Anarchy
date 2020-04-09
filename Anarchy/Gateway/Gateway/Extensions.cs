@@ -18,11 +18,15 @@ namespace Discord.Gateway
         /// <param name="interval">Amount of time (in milliseconds) to wait between sending heartbeats</param>
         internal static async void StartHeartbeatHandlersAsync(this DiscordSocketClient client, uint interval)
         {
-            while (true)
+            try
             {
-                await Task.Delay((int)interval);
-                client.Socket.Send(GatewayOpcode.Heartbeat, client.Sequence);
+                while (true)
+                {
+                    await Task.Delay((int)interval);
+                    client.Socket.Send(GatewayOpcode.Heartbeat, client.Sequence);
+                }
             }
+            catch { }
         }
     }
 }

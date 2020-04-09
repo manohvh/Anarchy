@@ -2,16 +2,6 @@
 {
     public abstract class Command
     {
-        public string[] Arguments { get; private set; }
-        public Message Message { get; private set; }
-
-        public Command(string[] args, Message message)
-        {
-            Arguments = args;
-            Message = message;
-        }
-
-
-        public abstract void Execute();
+        public abstract void Execute(string[] args, Message message);
     }
 }

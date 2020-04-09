@@ -136,7 +136,7 @@ namespace Discord
         /// <summary>
         /// Gets the guild's webhooks
         /// </summary>
-        public IReadOnlyList<Hook> GetWebhooks()
+        public IReadOnlyList<DiscordWebhook> GetWebhooks()
         {
             return Client.GetGuildWebhooks(Id);
         }

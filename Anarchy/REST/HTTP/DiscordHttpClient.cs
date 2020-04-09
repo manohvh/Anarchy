@@ -1,9 +1,8 @@
-﻿using System.Text;
-using Newtonsoft.Json.Schema;
+﻿using Newtonsoft.Json.Schema;
 using Newtonsoft.Json.Schema.Generation;
 using Newtonsoft.Json.Linq;
 using Leaf.xNet;
-using System.Linq;
+using System.Threading;
 
 namespace Discord
 {
@@ -23,6 +22,7 @@ namespace Discord
         public string UserAgent { get; set; }
         public string SuperProperties { get; set; }
         public string Fingerprint { get; private set; }
+        public bool RetryOnRatelimit { get; private set; } = true;
         public string ApiBaseEndpoint { get; set; } = "https://discordapp.com/api/v6";
 
 
@@ -90,22 +90,36 @@ namespace Discord
 
             bool hasData = method == HttpMethod.POST || method == HttpMethod.PATCH || method == HttpMethod.PUT;
 
-#pragma warning disable IDE0068
-            HttpRequest msg = new HttpRequest();
-            msg.IgnoreProtocolErrors = true;
-            if (hasData)
-                msg.AddHeader(HttpHeader.ContentType, "application/json");
-            if (Fingerprint != null)
-                msg.AddHeader("X-Fingerprint", Fingerprint);
-            msg.AddHeader("X-Super-Properties", SuperProperties);
-            msg.Proxy = Proxy;
-            msg.UserAgent = UserAgent;
-            msg.Authorization = AuthToken;
+            while (true)
+            {
+                try
+                {
+                    HttpRequest msg = new HttpRequest
+                    {
+                        IgnoreProtocolErrors = true
+                    };
+                    if (hasData)
+                        msg.AddHeader(HttpHeader.ContentType, "application/json");
+                    if (Fingerprint != null)
+                        msg.AddHeader("X-Fingerprint", Fingerprint);
+                    msg.AddHeader("X-Super-Properties", SuperProperties);
+                    msg.Proxy = Proxy;
+                    msg.UserAgent = UserAgent;
+                    msg.Authorization = AuthToken;
 
-            HttpResponse resp = msg.Raw(method, endpoint, hasData ? new StringContent(json) : null);
+                    HttpResponse resp = msg.Raw(method, endpoint, hasData ? new StringContent(json) : null);
 
-            CheckResponse(resp);
-            return resp;
+                    CheckResponse(resp);
+                    return resp;
+                }
+                catch (RateLimitException ex)
+                {
+                    if (RetryOnRatelimit)
+                        Thread.Sleep(ex.RetryAfter);
+                    else
+                        throw;
+                }
+            }
         }
 
 

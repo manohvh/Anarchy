@@ -9,7 +9,7 @@ namespace Discord.Commands
 {
     public class CommandHandler
     {
-        private Dictionary<string, Type> _commands;
+        private readonly Dictionary<string, Type> _commands;
         public string Prefix { get; private set; }
 
         public CommandHandler(string prefix, DiscordSocketClient client)
@@ -22,13 +22,16 @@ namespace Discord.Commands
 
             foreach (var type in executable.GetTypes())
             {
-                dynamic[] attrs = (dynamic[])type.GetCustomAttributes().Cast<dynamic>();
-
-                foreach (var attr in attrs)
+                foreach (var attr in type.GetCustomAttributes())
                 {
-                    if (attr.TypeId.Name == "CommandAttribute")
+                    if (attr.GetType() == typeof(CommandAttribute))
                     {
-                        _commands.Add(attr.Command, type);
+                        CommandAttribute converted = (CommandAttribute)attr;
+
+                        if (!type.IsSubclassOf(typeof(Command)))
+                            throw new NotImplementedException("All Anarchy command handlers must inherit Command");
+
+                        _commands.Add(converted.Command, type);
 
                         break;
                     }
@@ -50,11 +53,11 @@ namespace Discord.Commands
 
                         if (TryGetCommand(command, out KeyValuePair<string, Type> cmd))
                         {
-                            object classInstance = Activator.CreateInstance(cmd.Value, contents.Skip(1).ToArray(), args.Message);
+                            object classInstance = Activator.CreateInstance(cmd.Value);
 
                             MethodInfo cmdMethod = cmd.Value.GetMethod("Execute");
 
-                            cmdMethod.Invoke(classInstance, null);
+                            cmdMethod.Invoke(classInstance, new object[] { contents.Skip(1).ToArray(), args.Message });
                         }
                     }
                 }

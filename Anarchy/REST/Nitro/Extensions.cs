@@ -27,7 +27,7 @@ namespace Discord
 
         public static List<NitroBoost> GetNitroBoosts(this DiscordClient client)
         {
-            return client.HttpClient.Get("/users/@me/guilds/premium/subscriptions").Deserialize<List<NitroBoost>>();
+            return client.HttpClient.Get("/users/@me/guilds/premium/subscription-slots").Deserialize<List<NitroBoost>>();
         }
 
 
@@ -43,9 +43,9 @@ namespace Discord
         }
 
 
-        public static DateTime GetBoostCooldown(this DiscordClient client)
+        public static DateTime GetBoostCooldown(this DiscordClient client, ulong subscriptionId)
         {
-            return (DateTime)client.HttpClient.Get("/users/@me/guilds/premium/subscriptions/cooldown")
+            return (DateTime)client.HttpClient.Get($"/users/@me/guilds/premium/subscriptions/{subscriptionId}/cooldown")
                                                             .Deserialize<JObject>().GetValue("ends_at").ToObject(typeof(DateTime));
         }
     }

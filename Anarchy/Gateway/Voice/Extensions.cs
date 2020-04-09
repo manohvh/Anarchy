@@ -1,4 +1,6 @@
-﻿using Discord.Gateway;
+﻿using Discord.Voice;
+using System;
+using System.Threading;
 
 namespace Discord.Gateway
 {
@@ -19,15 +21,63 @@ namespace Discord.Gateway
 
 
         /// <summary>
-        /// Joins a voice channel
+        /// Joins a voice channel.
         /// </summary>
         /// <param name="guildId">ID of the guild</param>
         /// <param name="channelId">ID of the channel</param>
         /// <param name="muted">Whether the client will be muted or not</param>
         /// <param name="deafened">Whether the client will be deafened or not</param>
-        public static void JoinVoiceChannel(this DiscordSocketClient client, ulong guildId, ulong channelId, bool muted = false, bool deafened = false)
+        public static DiscordVoiceClient JoinVoiceChannel(this DiscordSocketClient client, ulong guildId, ulong channelId, bool muted = false, bool deafened = false)
         {
-            client.ChangeVoiceState(guildId, channelId, muted, deafened);
+            if (client.ConnectToVoiceChannels)
+            {
+                DiscordVoiceServer server = null;
+
+                client.OnVoiceServer += (c, result) =>
+                {
+                    server = result;
+                };
+
+                if (client.VoiceClients.ContainsKey(guildId))
+                {
+                    client.VoiceClients[guildId].Disconnect();
+                }
+
+                client.ChangeVoiceState(guildId, channelId, muted, deafened);
+
+                int attempts = 0;
+
+                while (server == null)
+                {
+                    if (attempts > 10 * 1000)
+                        throw new TimeoutException("Gateway did not respond with a server");
+
+                    Thread.Sleep(1);
+
+                    attempts++;
+                }
+
+                if (client.VoiceClients.ContainsKey(guildId))
+                {
+                    client.VoiceClients[guildId].ChannelId = channelId;
+                    client.VoiceClients[guildId].Server = server;
+                    client.VoiceClients[guildId].RemoveHandlers();
+
+                    return client.VoiceClients[guildId];
+                }
+                else
+                {
+                    var vClient = new DiscordVoiceClient(client, server, channelId);
+                    client.VoiceClients.Add(guildId, vClient);
+                    return vClient;
+                }
+            }
+            else
+            {
+                client.ChangeVoiceState(guildId, channelId, muted, deafened);
+
+                return null;
+            }
         }
 
 

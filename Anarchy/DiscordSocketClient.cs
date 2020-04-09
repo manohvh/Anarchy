@@ -1,7 +1,8 @@
 ﻿using Discord.Commands;
+using Discord.Voice;
 using Leaf.xNet;
 using Newtonsoft.Json.Linq;
-using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using WebSocketSharp;
@@ -33,9 +34,11 @@ namespace Discord.Gateway
         public event SettingsHandler OnSettingsUpdated;
 
 
+        public delegate void SessionsHandler(DiscordSocketClient client, DiscordSessionsEventArgs args);
+        public event SessionsHandler OnSessionsUpdated;
+
         public delegate void ProfileHandler(DiscordSocketClient client, ProfileUpdatedEventArgs args);
         public event ProfileHandler OnProfileUpdated;
-
 
         public event UserHandler OnUserUpdated;
 
@@ -64,6 +67,9 @@ namespace Discord.Gateway
         public event VoiceStateHandler OnUserJoinedVoiceChannel;
         public event VoiceStateHandler OnUserLeftVoiceChannel;
 
+        internal delegate void VoiceServerHandler(DiscordSocketClient client, DiscordVoiceServer server);
+        internal event VoiceServerHandler OnVoiceServer;
+
         public delegate void EmojisUpdatedHandler(DiscordSocketClient client, EmojisUpdatedEventArgs args);
         public event EmojisUpdatedHandler OnEmojisUpdated;
 
@@ -84,12 +90,13 @@ namespace Discord.Gateway
         public event RelationshipHandler OnRelationshipAdded;
         public event RelationshipHandler OnRelationshipRemoved;
         #endregion
-
-
-        internal WebSocket Socket { get; set; }
-        internal uint? Sequence { get; set; }
-        internal string SessionId { get; set; }
+        
+        internal Dictionary<ulong, DiscordVoiceClient> VoiceClients { get; private set; }
+        internal WebSocket Socket { get; private set; }
         public bool LoggedIn { get; private set; }
+        internal uint? Sequence { get; set; }
+        public string SessionId { get; set; }
+        public bool ConnectToVoiceChannels { get; set; } = true;
         public CommandHandler CommandHandler { get; private set; }
 
 
@@ -104,6 +111,8 @@ namespace Discord.Gateway
         public void Login(string token)
         {
             Token = token;
+
+            VoiceClients = new Dictionary<ulong, DiscordVoiceClient>();
 
             Socket = new WebSocket("wss://gateway.discord.gg/?v=6&encoding=json");
             if (HttpClient.Proxy != null)
@@ -159,134 +168,153 @@ namespace Discord.Gateway
             GatewayResponse payload = result.Data.Deserialize<GatewayResponse>();
             Sequence = payload.Sequence;
 
-            switch (payload.Opcode)
+            Task.Run(() =>
             {
-                case GatewayOpcode.Event:
-                    switch (payload.Title)
-                    {
-                        case "READY":
-                            LoggedIn = true;
-                            Login login = payload.Deserialize<Login>().SetJson(payload.Deserialize<JObject>()).SetClient(this);
+                switch (payload.Opcode)
+                {
+                    case GatewayOpcode.Event:
+                        switch (payload.Title)
+                        {
+                            case "READY":
+                                LoggedIn = true;
+                                Login login = payload.Deserialize<Login>().SetJson(payload.Deserialize<JObject>()).SetClient(this);
 
-                            this.User = login.User;
-                            this.SessionId = login.SessionId;
-                            OnLoggedIn?.Invoke(this, new LoginEventArgs(login));
-                            break;
-                        case "USER_SETTINGS_UPDATE":
-                            OnSettingsUpdated?.Invoke(this, new SettingsUpdatedEventArgs(payload.Deserialize<Settings>()));
-                            break;
-                        case "USER_UPDATE":
-                            User user = payload.Deserialize<User>().SetClient(this);
+                                this.User = login.User;
+                                this.SessionId = login.SessionId;
+                                OnLoggedIn?.Invoke(this, new LoginEventArgs(login));
+                                break;
+                            case "USER_SETTINGS_UPDATE":
+                                OnSettingsUpdated?.Invoke(this, new SettingsUpdatedEventArgs(payload.Deserialize<Settings>()));
+                                break;
+                            case "USER_UPDATE":
+                                User user = payload.Deserialize<User>().SetClient(this);
 
-                            if (user.Id == User.Id)
-                                User.Update(user);
+                                if (user.Id == User.Id)
+                                    User.Update(user);
 
-                            OnUserUpdated?.Invoke(this, new UserEventArgs(user));
-                            break;
-                        case "GUILD_MEMBER_LIST_UPDATE":
-                            OnGuildMembersReceived?.Invoke(this, new GuildMembersEventArgs(payload.Deserialize<GatewayUserMemberQueryResponse>()));
-                            break;
-                        case "GUILD_CREATE":
-                            OnJoinedGuild?.Invoke(this, new GuildEventArgs(payload.Deserialize<Guild>().SetClient(this)));
-                            break;
-                        case "GUILD_UPDATE":
-                            OnGuildUpdated?.Invoke(this, new GuildEventArgs(payload.Deserialize<Guild>().SetClient(this)));
-                            break;
-                        case "GUILD_DELETE":
-                            OnLeftGuild?.Invoke(this, new GuildEventArgs(payload.Deserialize<Guild>().SetClient(this)));
-                            break;
-                        case "GUILD_MEMBER_ADD":
-                            OnUserJoinedGuild?.Invoke(this, new GuildMemberEventArgs(payload.Deserialize<GuildMemberUpdate>().SetClient(this).Member));
-                            break;
-                        case "GUILD_MEMBER_REMOVE":
-                            OnUserLeftGuild?.Invoke(this, new GuildMemberEventArgs(payload.Deserialize<GuildMemberUpdate>().SetClient(this).Member));
-                            break;
-                        case "GUILD_MEMBER_UPDATE":
-                            OnGuildMemberUpdated?.Invoke(this, new GuildMemberEventArgs(payload.Deserialize<GuildMember>().SetClient(this)));
-                            break;
-                        case "GUILD_MEMBERS_CHUNK":
-                            OnGuildMembersReceived?.Invoke(this, new GuildMembersEventArgs(payload.Deserialize<GuildMemberList>().SetClient(this)));
-                            break;
-                        case "PRESENCE_UPDATE":
-                            OnUserPresenceUpdated?.Invoke(this, new PresenceUpdatedEventArgs(payload.Deserialize<PresenceUpdate>()));
-                            break;
-                        case "VOICE_STATE_UPDATE":
-                            VoiceState state = payload.Deserialize<VoiceState>().SetClient(this);
+                                OnUserUpdated?.Invoke(this, new UserEventArgs(user));
+                                break;
+                            case "GUILD_MEMBER_LIST_UPDATE":
+                                var args = new GuildMembersEventArgs(payload.Deserialize<GatewayUserMemberQueryResponse>());
 
-                            if (state.ChannelId != null)
-                                OnUserJoinedVoiceChannel?.Invoke(this, new VoiceStateEventArgs(state));
-                            else
-                                OnUserLeftVoiceChannel?.Invoke(this, new VoiceStateEventArgs(state));
-                            break;
-                        case "GUILD_ROLE_CREATE":
-                            OnRoleCreated?.Invoke(this, new RoleEventArgs(payload.Deserialize<RoleContainer>().Role.SetClient(this)));
-                            break;
-                        case "GUILD_ROLE_UPDATE":
-                            OnRoleUpdated?.Invoke(this, new RoleEventArgs(payload.Deserialize<RoleContainer>().Role.SetClient(this)));
-                            break;
-                        case "GUILD_EMOJIS_UPDATE":
-                            OnEmojisUpdated?.Invoke(this, new EmojisUpdatedEventArgs(payload.Deserialize<EmojiContainer>().SetClient(this)));
-                            break;
-                        case "CHANNEL_CREATE":
-                            OnChannelCreated?.Invoke(this, new ChannelEventArgs(payload.Deserialize<GuildChannel>().SetClient(this)));
-                            break;
-                        case "CHANNEL_UPDATE":
-                            OnChannelUpdated?.Invoke(this, new ChannelEventArgs(payload.Deserialize<GuildChannel>().SetClient(this)));
-                            break;
-                        case "CHANNEL_DELETE":
-                            OnChannelDeleted?.Invoke(this, new ChannelEventArgs(payload.Deserialize<GuildChannel>().SetClient(this)));
-                            break;
-                        case "TYPING_START":
-                            OnUserTyping?.Invoke(this, new UserTypingEventArgs(payload.Deserialize<UserTyping>()));
-                            break;
-                        case "MESSAGE_CREATE":
-                            OnMessageReceived?.Invoke(this, new MessageEventArgs(payload.Deserialize<Message>().SetClient(this)));
-                            break;
-                        case "MESSAGE_UPDATE":
-                            OnMessageEdited?.Invoke(this, new MessageEventArgs(payload.Deserialize<Message>().SetClient(this)));
-                            break;
-                        case "MESSAGE_DELETE":
-                            OnMessageDeleted?.Invoke(this, new MessageDeletedEventArgs(payload.Deserialize<DeletedMessage>()));
-                            break;
-                        case "MESSAGE_REACTION_ADD":
-                            OnMessageReactionAdded?.Invoke(this, new ReactionEventArgs(payload.Deserialize<MessageReactionUpdate>().SetClient(this)));
-                            break;
-                        case "MESSAGE_REACTION_REMOVE":
-                            OnMessageReactionRemoved?.Invoke(this, new ReactionEventArgs(payload.Deserialize<MessageReactionUpdate>().SetClient(this)));
-                            break;
-                        case "GUILD_BAN_ADD":
-                            OnUserBanned?.Invoke(this, new BanUpdateEventArgs(payload.Deserialize<BanContainer>().SetClient(this)));
-                            break;
-                        case "GUILD_BAN_REMOVE":
-                            OnUserUnbanned?.Invoke(this, new BanUpdateEventArgs(payload.Deserialize<BanContainer>().SetClient(this)));
-                            break;
-                        case "RELATIONSHIP_ADD":
-                            OnRelationshipAdded?.Invoke(this, new RelationshipEventArgs(payload.Deserialize<Relationship>().SetClient(this)));
-                            break;
-                        case "RELATIONSHIP_REMOVE":
-                            OnRelationshipRemoved?.Invoke(this, new RelationshipEventArgs(payload.Deserialize<Relationship>().SetClient(this)));
-                            break;
-                        case "USER_CONNECTIONS_UPDATE":
-                            Task.Run(() =>
-                            {
-                                DiscordProfile profile = this.User.GetProfile();
-                                OnProfileUpdated?.Invoke(this, new ProfileUpdatedEventArgs(profile));
-                            });
-                            break;
-                    }
-                    break;
-                case GatewayOpcode.InvalidSession:
-                    this.LoginToGateway();
-                    break;
-                case GatewayOpcode.Connected:
-                    if (!LoggedIn)
+                                foreach (var member in args.Members)
+                                {
+                                    member.SetClient(this);
+                                    member.GuildId = args.GuildId;
+                                }
+
+                                OnGuildMembersReceived?.Invoke(this, args);
+                                break;
+                            case "GUILD_CREATE":
+                                OnJoinedGuild?.Invoke(this, new GuildEventArgs(payload.Deserialize<Guild>().SetClient(this)));
+                                break;
+                            case "GUILD_UPDATE":
+                                OnGuildUpdated?.Invoke(this, new GuildEventArgs(payload.Deserialize<Guild>().SetClient(this)));
+                                break;
+                            case "GUILD_DELETE":
+                                OnLeftGuild?.Invoke(this, new GuildEventArgs(payload.Deserialize<Guild>().SetClient(this)));
+                                break;
+                            case "GUILD_MEMBER_ADD":
+                                OnUserJoinedGuild?.Invoke(this, new GuildMemberEventArgs(payload.Deserialize<GuildMemberUpdate>().SetClient(this).Member));
+                                break;
+                            case "GUILD_MEMBER_REMOVE":
+                                OnUserLeftGuild?.Invoke(this, new GuildMemberEventArgs(payload.Deserialize<GuildMemberUpdate>().SetClient(this).Member));
+                                break;
+                            case "GUILD_MEMBER_UPDATE":
+                                OnGuildMemberUpdated?.Invoke(this, new GuildMemberEventArgs(payload.Deserialize<GuildMember>().SetClient(this)));
+                                break;
+                            case "GUILD_MEMBERS_CHUNK":
+                                OnGuildMembersReceived?.Invoke(this, new GuildMembersEventArgs(payload.Deserialize<GuildMemberList>().SetClient(this)));
+                                break;
+                            case "PRESENCE_UPDATE":
+                                OnUserPresenceUpdated?.Invoke(this, new PresenceUpdatedEventArgs(payload.Deserialize<PresenceUpdate>()));
+                                break;
+                            case "VOICE_STATE_UPDATE":
+                                VoiceState state = payload.Deserialize<VoiceState>().SetClient(this);
+
+                                if (state.ChannelId != null) // we might be able to do this to kinda change connection channel for DiscordVoiceClients
+                                    OnUserJoinedVoiceChannel?.Invoke(this, new VoiceStateEventArgs(state));
+                                else
+                                    OnUserLeftVoiceChannel?.Invoke(this, new VoiceStateEventArgs(state));
+                                break;
+                            case "VOICE_SERVER_UPDATE":
+                                OnVoiceServer?.Invoke(this, payload.Deserialize<DiscordVoiceServer>());
+                                break;
+                            case "GUILD_ROLE_CREATE":
+                                OnRoleCreated?.Invoke(this, new RoleEventArgs(payload.Deserialize<RoleContainer>().Role.SetClient(this)));
+                                break;
+                            case "GUILD_ROLE_UPDATE":
+                                OnRoleUpdated?.Invoke(this, new RoleEventArgs(payload.Deserialize<RoleContainer>().Role.SetClient(this)));
+                                break;
+                            case "GUILD_EMOJIS_UPDATE":
+                                OnEmojisUpdated?.Invoke(this, new EmojisUpdatedEventArgs(payload.Deserialize<EmojiContainer>().SetClient(this)));
+                                break;
+                            case "CHANNEL_CREATE":
+                                OnChannelCreated?.Invoke(this, new ChannelEventArgs(payload.Deserialize<GuildChannel>().SetClient(this)));
+                                break;
+                            case "CHANNEL_UPDATE":
+                                OnChannelUpdated?.Invoke(this, new ChannelEventArgs(payload.Deserialize<GuildChannel>().SetClient(this)));
+                                break;
+                            case "CHANNEL_DELETE":
+                                OnChannelDeleted?.Invoke(this, new ChannelEventArgs(payload.Deserialize<GuildChannel>().SetClient(this)));
+                                break;
+                            case "TYPING_START":
+                                OnUserTyping?.Invoke(this, new UserTypingEventArgs(payload.Deserialize<UserTyping>()));
+                                break;
+                            case "MESSAGE_CREATE":
+                                OnMessageReceived?.Invoke(this, new MessageEventArgs(payload.Deserialize<Message>().SetClient(this)));
+                                break;
+                            case "MESSAGE_UPDATE":
+                                OnMessageEdited?.Invoke(this, new MessageEventArgs(payload.Deserialize<Message>().SetClient(this)));
+                                break;
+                            case "MESSAGE_DELETE":
+                                OnMessageDeleted?.Invoke(this, new MessageDeletedEventArgs(payload.Deserialize<DeletedMessage>()));
+                                break;
+                            case "MESSAGE_REACTION_ADD":
+                                OnMessageReactionAdded?.Invoke(this, new ReactionEventArgs(payload.Deserialize<MessageReactionUpdate>().SetClient(this)));
+                                break;
+                            case "MESSAGE_REACTION_REMOVE":
+                                OnMessageReactionRemoved?.Invoke(this, new ReactionEventArgs(payload.Deserialize<MessageReactionUpdate>().SetClient(this)));
+                                break;
+                            case "GUILD_BAN_ADD":
+                                OnUserBanned?.Invoke(this, new BanUpdateEventArgs(payload.Deserialize<BanContainer>().SetClient(this)));
+                                break;
+                            case "GUILD_BAN_REMOVE":
+                                OnUserUnbanned?.Invoke(this, new BanUpdateEventArgs(payload.Deserialize<BanContainer>().SetClient(this)));
+                                break;
+                            case "RELATIONSHIP_ADD":
+                                OnRelationshipAdded?.Invoke(this, new RelationshipEventArgs(payload.Deserialize<Relationship>().SetClient(this)));
+                                break;
+                            case "RELATIONSHIP_REMOVE":
+                                OnRelationshipRemoved?.Invoke(this, new RelationshipEventArgs(payload.Deserialize<Relationship>().SetClient(this)));
+                                break;
+                            case "USER_CONNECTIONS_UPDATE":
+                                Task.Run(() =>
+                                {
+                                    DiscordProfile profile = this.User.GetProfile();
+                                    OnProfileUpdated?.Invoke(this, new ProfileUpdatedEventArgs(profile));
+                                });
+                                break;
+                            case "MESSAGE_ACK": // triggered whenever another person logged into the account acknowledges a message
+                                break;
+                            case "SESSIONS_REPLACE":
+                                OnSessionsUpdated?.Invoke(this, new DiscordSessionsEventArgs(payload.Deserialize<List<DiscordSession>>()));
+                                break;
+                        }
+                        break;
+                    case GatewayOpcode.InvalidSession:
                         this.LoginToGateway();
-                    else
-                        this.Resume();
+                        break;
+                    case GatewayOpcode.Connected:
+                        if (!LoggedIn)
+                            this.LoginToGateway();
+                        else
+                            this.Resume();
 
-                    this.StartHeartbeatHandlersAsync(payload.Deserialize<JObject>().GetValue("heartbeat_interval").ToObject<uint>());
-                    break;
-            }
+                        this.StartHeartbeatHandlersAsync(payload.Deserialize<JObject>().GetValue("heartbeat_interval").ToObject<uint>());
+                        break;
+                }
+            });
         }
     }
 }

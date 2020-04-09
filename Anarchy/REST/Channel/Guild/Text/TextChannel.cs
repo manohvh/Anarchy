@@ -163,7 +163,7 @@ namespace Discord
         /// <summary>
         /// Gets the channel's webhooks
         /// </summary>
-        public IReadOnlyList<Hook> GetWebhooks()
+        public IReadOnlyList<DiscordWebhook> GetWebhooks()
         {
             return Client.GetChannelWebhooks(Id);
         }
@@ -174,7 +174,7 @@ namespace Discord
         /// </summary>
         /// <param name="properties">Options for creating/modifying the webhook</param>
         /// <returns>The created webhook</returns>
-        public Hook CreateWebhook(WebhookProperties properties)
+        public DiscordWebhook CreateWebhook(DiscordWebhookProperties properties)
         {
             properties.ChannelId = Id;
 

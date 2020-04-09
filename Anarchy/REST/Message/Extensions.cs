@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 
@@ -16,13 +17,51 @@ namespace Discord
         /// Sends a message to a channel
         /// </summary>
         /// <param name="channelId">ID of the channel</param>
-        /// <param name="message">Content of the message</param>
+        /// <param name="message">Contents of the message</param>
         /// <param name="tts">Whether the message should be TTS or not</param>
         /// <returns>The message</returns>
         public static Message SendMessage(this DiscordClient client, ulong channelId, string message, bool tts = false, Embed embed = null)
         {
             return client.HttpClient.Post($"/channels/{channelId}/messages",
                                JsonConvert.SerializeObject(new MessageProperties() { Content = message, Tts = tts, Embed = embed })).Deserialize<Message>().SetClient(client);
+        }
+
+
+        /// <summary>
+        /// Sends a message with a file attached.
+        /// </summary>
+        /// <param name="channelId">ID of the channel</param>
+        /// <param name="fileName">Name for the attachment to have</param>
+        /// <param name="fileData">Raw byte data from file</param>
+        /// <param name="message">Contents of the message</param>
+        /// <param name="tts">Whether the message should be TTS or not</param>
+        public static Message SendFile(this DiscordClient client, ulong channelId, string fileName, byte[] fileData, string message = null, bool tts = false)
+        {
+            HttpClient httpClient = new HttpClient(new HttpClientHandler() { Proxy = client.HttpClient.Proxy != null && client.HttpClient.Proxy.Type == Leaf.xNet.ProxyType.HTTP ? new WebProxy(client.HttpClient.Proxy.Host, client.HttpClient.Proxy.Port) : null });
+            httpClient.DefaultRequestHeaders.Add("Authorization", client.Token);
+
+            MultipartFormDataContent content = new MultipartFormDataContent();
+            content.Add(new StringContent(message), "content");
+            content.Add(new StringContent("0"), "nonce");
+            content.Add(new StringContent(tts ? "1" : "0"), "tts");
+            content.Add(new ByteArrayContent(fileData), "file", fileName);
+
+            var resp = httpClient.PostAsync(client.HttpClient.ApiBaseEndpoint + $"/channels/{channelId}/messages", content).Result;
+
+            return resp.Content.ReadAsStringAsync().Result.Deserialize<Message>().SetClient(client);
+        }
+
+
+        /// <summary>
+        /// Sends a message with a file attached.
+        /// </summary>
+        /// <param name="channelId">ID of the channel</param>
+        /// <param name="filePath">Path to the file you want attached</param>
+        /// <param name="message">Contents of the message</param>
+        /// <param name="tts">Whether the message should be TTS or not</param>
+        public static Message SendFile(this DiscordClient client, ulong channelId, string filePath, string message = null, bool tts = false)
+        {
+            return client.SendFile(channelId, new FileInfo(filePath).Name, File.ReadAllBytes(filePath), message, tts);
         }
 
 

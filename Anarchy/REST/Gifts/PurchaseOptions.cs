@@ -9,7 +9,9 @@ namespace Discord
 
 
         [JsonProperty("gift")]
+#pragma warning disable CS0414
         private bool _gift = true; // rn we only have support for gifts kek
+#pragma warning restore CS0414
 
 
         [JsonProperty("payment_source_id")]

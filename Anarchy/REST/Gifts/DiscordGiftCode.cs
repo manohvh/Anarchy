@@ -18,7 +18,9 @@ namespace Discord
 
 
         [JsonProperty("expires_at")]
+#pragma warning disable CS0649
         private string _expiresAt;
+#pragma warning restore CS0649
 
         public DateTime ExpiresAt
         {

@@ -15,8 +15,6 @@ namespace Discord.Gateway
 
 
         [JsonProperty("member")]
-        private GuildMember _member;
-
         public GuildMember Member { get; private set; }
 
 

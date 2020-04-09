@@ -1,5 +1,18 @@
 (Please keep in mind that these are only the major/important changes. There have been way more than written here)<br>
 
+# 0.7.0.0
+### Additions
+- Added support for sending data through voice channels.
+- Added some more events to DiscordSocketClient.
+- Added RetryOnRateLimit property to DiscordHttpClient, which controls whether Anarchy should retry HTTP requests on ratelimits (enabled by default).
+- Added support for sending files through messages (SendFile).
+
+### Improvements
+- Renamed a lot of things related to webhooks (most notably, 'Hook' was renamed to 'DiscordWebhook').
+- Made changes to how command handling classes are structured. See example project 'CommandListener' for details.
+
+
+
 # 0.6.5.1
 ### Additions
 - Added some connections functionality.
