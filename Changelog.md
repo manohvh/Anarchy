@@ -6,10 +6,12 @@
 - Added some more events to DiscordSocketClient.
 - Added RetryOnRateLimit property to DiscordHttpClient, which controls whether Anarchy should retry HTTP requests on ratelimits (enabled by default).
 - Added support for sending files through messages (SendFile).
+- Added support for logging in by username + password, as well as registering new accounts.
 
 ### Improvements
-- Renamed a lot of things related to webhooks (most notably, 'Hook' was renamed to 'DiscordWebhook').
+- Renamed some classes to their original names prepended with 'Discord' to avoid collision with other libraries.
 - Made changes to how command handling classes are structured. See example project 'CommandListener' for details.
+- Made changes to how the http client works, making it simpler to send HTTP requests to Discord.
 
 
 

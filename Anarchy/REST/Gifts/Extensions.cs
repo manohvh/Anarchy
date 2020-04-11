@@ -8,14 +8,12 @@ namespace Discord
     {
         public static string PurchaseGift(this DiscordClient client, ulong paymentMethodId, ulong skuId, ulong subPlanId, int expectedAmount)
         {
-            var resp = client.HttpClient.Post($"https://discordapp.com/api/v6/store/skus/{skuId}/purchase", JsonConvert.SerializeObject(new PurchaseOptions()
+            return client.HttpClient.Post($"https://discordapp.com/api/v6/store/skus/{skuId}/purchase", new PurchaseOptions()
             {
                 PaymentMethodId = paymentMethodId,
                 SkuPlanId = subPlanId,
                 ExpectedAmount = expectedAmount
-            }));
-
-            return resp.Deserialize<JObject>().Value<string>("gift_code");
+            }).Deserialize<JObject>().Value<string>("gift_code");
         }
 
 

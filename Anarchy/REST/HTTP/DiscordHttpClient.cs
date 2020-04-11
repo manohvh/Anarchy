@@ -3,6 +3,7 @@ using Newtonsoft.Json.Schema.Generation;
 using Newtonsoft.Json.Linq;
 using Leaf.xNet;
 using System.Threading;
+using Newtonsoft.Json;
 
 namespace Discord
 {
@@ -81,8 +82,18 @@ namespace Discord
         /// <param name="method">HTTP method to use</param>
         /// <param name="endpoint">API endpoint (fx. /users/@me)</param>
         /// <param name="json">JSON content</param>
-        private HttpResponse Send(HttpMethod method, string endpoint, string json = "{}")
+        private HttpResponse Send(HttpMethod method, string endpoint, object payload = null)
         {
+            string json = "{}";
+
+            if (payload != null)
+            {
+                if (payload.GetType() == typeof(string))
+                    json = (string)payload;
+                else
+                    json = JsonConvert.SerializeObject(payload);
+            }
+
             bool isEndpoint = !endpoint.StartsWith("http");
 
             if (isEndpoint)
@@ -129,9 +140,9 @@ namespace Discord
         }
 
 
-        public HttpResponse Post(string endpoint, string json = "{}")
+        public HttpResponse Post(string endpoint, object payload = null)
         {
-            return Send(HttpMethod.POST, endpoint, json);
+            return Send(HttpMethod.POST, endpoint, payload);
         }
 
 
@@ -141,15 +152,15 @@ namespace Discord
         }
 
 
-        public HttpResponse Put(string endpoint, string json = "{}")
+        public HttpResponse Put(string endpoint, object payload = null)
         {
-            return Send(HttpMethod.PUT, endpoint, json);
+            return Send(HttpMethod.PUT, endpoint, payload);
         }
 
 
-        public HttpResponse Patch(string endpoint, string json = "{}")
+        public HttpResponse Patch(string endpoint, object payload = null)
         {
-            return Send(HttpMethod.PATCH, endpoint, json);
+            return Send(HttpMethod.PATCH, endpoint, payload);
         }
     }
 }

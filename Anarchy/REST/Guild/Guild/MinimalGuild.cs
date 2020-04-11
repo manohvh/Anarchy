@@ -1,5 +1,6 @@
 ﻿using Discord.Webhook;
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 
 namespace Discord
@@ -55,6 +56,12 @@ namespace Discord
         }
 
 
+        public void SetVanityUrl(string vanityCode)
+        {
+            Client.SetGuildVanityUrl(Id, vanityCode);
+        }
+
+
         /// <summary>
         /// Gets the guild's channels
         /// </summary>
@@ -107,7 +114,7 @@ namespace Discord
         /// <summary>
         /// Gets the guild's roles
         /// </summary>
-        public virtual IReadOnlyList<Role> GetRoles()
+        public virtual IReadOnlyList<DiscordRole> GetRoles()
         {
             return Client.GetGuildRoles(Id);
         }
@@ -118,7 +125,7 @@ namespace Discord
         /// </summary>
         /// <param name="properties">Options for modifying the role after creating it</param>
         /// <returns>The created role</returns>
-        public Role CreateRole(RoleProperties properties = null)
+        public DiscordRole CreateRole(RoleProperties properties = null)
         {
             return Client.CreateGuildRole(Id, properties);
         }

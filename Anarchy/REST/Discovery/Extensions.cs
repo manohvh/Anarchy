@@ -14,8 +14,8 @@ namespace Discord
         /// <param name="offset">The offset in the list</param>
         public static IReadOnlyList<DiscoveryGuild> QueryGuilds(this DiscordClient client, string query, int limit = 20, int offset = 0)
         {
-            return ((IReadOnlyList<DiscoveryGuild>)JObject.Parse(client.HttpClient.Get($"/discoverable-guilds?query={query}&offset={offset}&limit={limit}").ToString())["guilds"]
-                                                            .ToObject(typeof(IReadOnlyList<DiscoveryGuild>))).SetClientsInList(client);
+            return client.HttpClient.Get($"/discoverable-guilds?query={query}&offset={offset}&limit={limit}")
+                                .Deserialize<JObject>().Value<IReadOnlyList<DiscoveryGuild>>("guilds").SetClientsInList(client);
         }
 
 

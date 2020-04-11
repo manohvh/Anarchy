@@ -24,10 +24,10 @@ namespace Discord
 #pragma warning disable IDE0051, IDE1006
         private uint _permissions
         {
-            set { Permissions = new Permissions(value); }
+            set { Permissions = new DiscordPermissions(value); }
         }
 #pragma warning restore IDE0051, IDE1006
-        public Permissions Permissions { get; private set; }
+        public DiscordPermissions Permissions { get; private set; }
 
 
         /// <summary>

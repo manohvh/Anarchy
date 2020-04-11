@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Discord.Gateway;
+using Discord.Voice;
 
 namespace Discord
 {
@@ -48,10 +49,12 @@ namespace Discord
         }
 
 
-        public void Join(bool muted = false, bool deafened = false)
+        public DiscordVoiceClient Join(bool muted = false, bool deafened = false)
         {
             if (Client.GetType() == typeof(DiscordSocketClient))
-                ((DiscordSocketClient)Client).JoinVoiceChannel(GuildId, Id, muted, deafened);
+                return ((DiscordSocketClient)Client).JoinVoiceChannel(GuildId, Id, muted, deafened);
+            else
+                return null;
         }
 
 

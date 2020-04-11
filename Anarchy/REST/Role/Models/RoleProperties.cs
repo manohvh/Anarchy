@@ -23,7 +23,7 @@ namespace Discord
         }
 
 
-        private readonly Property<EditablePermissions> PermissionsProperty = new Property<EditablePermissions>();
+        private readonly Property<DiscordEditablePermissions> PermissionsProperty = new Property<DiscordEditablePermissions>();
         [JsonProperty("permissions")]
 #pragma warning disable IDE1006, IDE0051
         private uint _permissions
@@ -31,7 +31,7 @@ namespace Discord
             get { return Permissions; }
         }
 #pragma warning restore IDE1006, IDE0051
-        public EditablePermissions Permissions
+        public DiscordEditablePermissions Permissions
         {
             get { return PermissionsProperty; }
             set { PermissionsProperty.Value = value; }

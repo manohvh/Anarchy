@@ -15,7 +15,7 @@ namespace Discord
 
         public static void RedeemNitroGift(this DiscordClient client, string code, ulong? channelId = null)
         {
-            client.HttpClient.Post($"/entitlements/gift-codes/{code}/redeem", channelId.HasValue ? $"{{\"channel_id\":{channelId.Value}}}" : "");
+            client.HttpClient.Post($"/entitlements/gift-codes/{code}/redeem", channelId.HasValue ? $"{{\"channel_id\":{channelId.Value}}}" : null);
         }
 
 
@@ -34,6 +34,12 @@ namespace Discord
         public static void BoostGuild(this DiscordClient client, ulong guildId)
         {
             client.HttpClient.Put($"/guilds/{guildId}/premium/subscriptions");
+        }
+
+
+        public static IReadOnlyList<DiscordGuildSubscription> TransferGuildBoost(this DiscordClient client, ulong boostId, ulong guildId)
+        {
+            return client.HttpClient.Put($"/guilds/{guildId}/premium/subscriptions", $"{{\"user_premium_guild_subscription_slot_ids\":[\"{boostId}\"]}}").Deserialize<IReadOnlyList<DiscordGuildSubscription>>();
         }
 
 

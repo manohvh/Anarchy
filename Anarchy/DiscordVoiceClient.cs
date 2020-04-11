@@ -16,6 +16,7 @@ namespace Discord.Voice
         private UdpClient _udpClient;
         private readonly DiscordSocketClient _client;
 
+        // RTP and Sodium
         private ushort _sequence;
         private uint _timestamp;
         private int _ssrc { get; set; }
@@ -24,6 +25,9 @@ namespace Discord.Voice
         public DiscordVoiceServer Server { get; internal set; }
         public ulong ChannelId { get; internal set; }
         public bool Connected { get; private set; }
+        public bool Speaking { get; private set; }
+        private bool _stopCurrent { get; set; }
+
 
         public delegate void StandardHandler(DiscordVoiceClient client, EventArgs e);
 
@@ -55,11 +59,13 @@ namespace Discord.Voice
                 Disconnect();
 
             Socket = new WebSocket("wss://" + Server.Server.Split(':')[0] + "?v=4");
+
             if (_client.HttpClient.Proxy != null)
             {
                 if (_client.HttpClient.Proxy.Type == ProxyType.HTTP) //WebSocketSharp only supports HTTP proxies :(
                     Socket.SetProxy($"http://{_client.HttpClient.Proxy.Host}:{_client.HttpClient.Proxy.Port}", "", "");
             }
+
             Socket.OnClose += (sender, e) => 
             {
                 DiscordVoiceCloseEventArgs error = null;
@@ -106,13 +112,28 @@ namespace Discord.Voice
         }
 
 
-        private byte[] CreateHeader(ushort sequence, uint timestamp)
+        public bool CancelCurrentSpeech()
         {
+            if (!Speaking)
+                return false;
+
+            _stopCurrent = true;
+
+            while (Speaking) { Thread.Sleep(1); }
+
+            return true;
+        }
+
+
+        private void SendAudioData(OpusEncoder encoder, ref byte[] audio, int offset, ushort seq, uint timestamp)
+        {
+            byte[] packet = new byte[OpusEncoder.FrameBytes + 12];
+
             byte[] header = new byte[12];
             header[0] = 0x80;
             header[1] = 0x78;
-            header[2] = (byte)(sequence >> 8);
-            header[3] = (byte)(sequence >> 0);
+            header[2] = (byte)(seq >> 8);
+            header[3] = (byte)(seq >> 0);
             header[4] = (byte)(timestamp >> 24);
             header[5] = (byte)(timestamp >> 16);
             header[6] = (byte)(timestamp >> 8);
@@ -121,16 +142,6 @@ namespace Discord.Voice
             header[9] = (byte)(_ssrc >> 16);
             header[10] = (byte)(_ssrc >> 8);
             header[11] = (byte)(_ssrc >> 0);
-
-            return header;
-        }
-
-
-        private void SendAudioData(OpusEncoder encoder, ref byte[] audio, int offset, ushort seq, uint timestamp)
-        {
-            byte[] packet = new byte[OpusEncoder.FrameBytes + 12];
-
-            byte[] header = CreateHeader(seq, timestamp);
 
             Buffer.BlockCopy(header, 0, packet, 0, 12);
 
@@ -141,34 +152,52 @@ namespace Discord.Voice
         }
 
 
-        public void Speak(byte[] audio, int bitrate, AudioApplication usedFor = AudioApplication.Mixed)
+        public bool Speak(byte[] audio, uint bitrate, AudioApplication usedFor = AudioApplication.Mixed)
         {
-            var encoder = new OpusEncoder(bitrate, usedFor, 0);
+            while (Speaking) { Thread.Sleep(1); }
+
+            Speaking = true;
+
+            var encoder = new OpusEncoder((int)bitrate, usedFor, 0);
 
             int offset = 0;
 
             long nextTick = Environment.TickCount;
 
-            while (offset + OpusEncoder.FrameBytes < audio.Length)
+            try
             {
-                SetSpeaking(true);
-
-                long dist = nextTick - Environment.TickCount;
-
-                if (dist <= 0)
+                while (offset + OpusEncoder.FrameBytes < audio.Length && !_stopCurrent)
                 {
-                    SendAudioData(encoder, ref audio, offset, _sequence, _timestamp);
+                    SetSpeaking(true);
 
-                    nextTick += OpusEncoder.TimeBetweenFrames;
-                    offset += OpusEncoder.FrameBytes;
-                    _sequence++;
-                    _timestamp += OpusEncoder.FrameSamplesPerChannel;
+                    long dist = nextTick - Environment.TickCount;
+
+                    if (dist <= 0)
+                    {
+                        SendAudioData(encoder, ref audio, offset, _sequence, _timestamp);
+
+                        nextTick += OpusEncoder.TimeBetweenFrames;
+                        offset += OpusEncoder.FrameBytes;
+                        _sequence++;
+                        _timestamp += OpusEncoder.FrameSamplesPerChannel;
+                    }
+                    else
+                        Thread.Sleep((int)dist);
                 }
-                else
-                    Thread.Sleep((int)dist);
-            }
 
-            SetSpeaking(false);
+                SetSpeaking(false);
+
+                _stopCurrent = false;
+                Speaking = false;
+
+                return true;
+            }
+            catch
+            {
+                Speaking = false;
+
+                return false;
+            }
         }
 
 
@@ -209,9 +238,7 @@ namespace Discord.Voice
                         List<byte> why = new List<byte>();
 
                         foreach (var item in payload.Data.secret_key)
-                        {
                             why.Add(item.ToObject<byte>());
-                        }
 
                         _secretKey = why.ToArray();
 
@@ -238,7 +265,7 @@ namespace Discord.Voice
                                 Socket.Send(JsonConvert.SerializeObject(new DiscordVoiceRequest<long>()
                                 {
                                     Opcode = DiscordVoiceOpcode.Heartbeat,
-                                    Payload = Snowflake.System.CurrentTimeMillis()
+                                    Payload = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
                                 }));
                                 Thread.Sleep(payload.Data.heartbeat_interval);
                             }

@@ -16,7 +16,6 @@ namespace Discord.Voice
             });
 
             MemoryStream memStream = new MemoryStream();
-
             process.StandardOutput.BaseStream.CopyTo(memStream);
             return memStream.ToArray();
         }

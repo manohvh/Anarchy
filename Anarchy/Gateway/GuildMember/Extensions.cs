@@ -9,7 +9,7 @@ namespace Discord.Gateway
         /// Requests a member chunk from a guild
         /// </summary>
         /// <param name="guildId">ID of the guild</param>
-        /// <param name="limit">Max amount of members to receive (<see cref="MemberAmount"/> might help)</param>
+        /// <param name="limit">Max amount of members to receive (<see cref="DiscordMemberAmount"/> might help)</param>
         public static void RequestGuildMembers(this DiscordSocketClient client, ulong guildId, uint limit = 100)
         {
             var query = new GatewayMemberQuery()
@@ -59,9 +59,9 @@ namespace Discord.Gateway
                 }
             };
 
-            client.RequestGuildMembers(guildId, MemberAmount.All);
+            client.RequestGuildMembers(guildId, 0);
 
-            while (newMembers.Count == MemberAmount.Max || newMembers.Count == 0) Thread.Sleep(20);
+            while (newMembers.Count == 1000 || newMembers.Count == 0) Thread.Sleep(20);
 
             return members;
         }

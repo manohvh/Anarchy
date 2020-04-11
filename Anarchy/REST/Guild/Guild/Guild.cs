@@ -47,9 +47,9 @@ namespace Discord
         public IReadOnlyList<string> Features { get; private set; }
 
 
-        private IReadOnlyList<Role> _roles;
+        private IReadOnlyList<DiscordRole> _roles;
         [JsonProperty("roles")]
-        public IReadOnlyList<Role> Roles
+        public IReadOnlyList<DiscordRole> Roles
         {
             get { return _roles; }
             private set
@@ -121,7 +121,7 @@ namespace Discord
         /// <summary>
         /// Gets the guild's roles
         /// </summary>
-        public override IReadOnlyList<Role> GetRoles()
+        public override IReadOnlyList<DiscordRole> GetRoles()
         {
             return Roles = base.GetRoles();
         }

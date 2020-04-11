@@ -12,9 +12,7 @@ namespace Discord.Gateway
 
 
         [JsonProperty("query")]
-#pragma warning disable CS0414, IDE0044, IDE0051
-        private string _query = "";
-#pragma warning restore CS0414, IDE0044, IDE0051
+        private readonly string _query = "";
 
 
         [JsonProperty("limit")]

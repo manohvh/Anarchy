@@ -3,18 +3,18 @@ using System.Linq;
 
 namespace Discord
 {
-    public static class PermissionCalculator
+    public static class DiscordPermissionCalculator
     {
         /// <summary>
-        /// Creates an <see cref="EditablePermissions"/> from scratch
+        /// Creates an <see cref="DiscordEditablePermissions"/> from scratch
         /// </summary>
         /// <param name="perms">The permissions to add</param>
-        public static EditablePermissions Create(List<Permission> perms)
+        public static DiscordEditablePermissions Create(List<DiscordPermission> perms)
         {
             uint permissions = 512;
             perms = perms.Distinct().ToList();
             perms.ForEach(perm => permissions = Add(permissions, perm));
-            return new EditablePermissions(permissions);
+            return new DiscordEditablePermissions(permissions);
         }
 
 
@@ -23,7 +23,7 @@ namespace Discord
         /// </summary>
         /// <param name="permissions">Permissions to add to</param>
         /// <param name="permission">Permission to add</param>
-        public static uint Add(uint permissions, Permission permission)
+        public static uint Add(uint permissions, DiscordPermission permission)
         {
             if (!Has(permissions, permission))
                 permissions |= (uint)permission;
@@ -37,7 +37,7 @@ namespace Discord
         /// </summary>
         /// <param name="permissions">Permissions to remove from</param>
         /// <param name="permission">Permission to remove</param>
-        public static uint Remove(uint permissions, Permission permission)
+        public static uint Remove(uint permissions, DiscordPermission permission)
         {
             if (Has(permissions, permission))
                 permissions ^= (uint)permission;
@@ -50,7 +50,7 @@ namespace Discord
         /// Checks if a permission list has a permission or not
         /// </summary>
         /// <param name="permission">Permission to check</param>
-        public static bool Has(uint permissions, Permission permission)
+        public static bool Has(uint permissions, DiscordPermission permission)
         {
             return (permissions & (uint)permission) == (uint)permission;
         }

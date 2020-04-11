@@ -22,7 +22,7 @@ namespace Discord
 
 
         [JsonProperty("permission_overwrites")]
-        public IReadOnlyList<PermissionOverwrite> PermissionOverwrites { get; protected set; }
+        public IReadOnlyList<DiscordPermissionOverwrite> PermissionOverwrites { get; protected set; }
 
 
         /// <summary>
@@ -58,10 +58,10 @@ namespace Discord
         /// Adds/edits a permission overwrite to a channel
         /// </summary>
         /// <param name="overwrite">The permission overwrite to add/edit</param>
-        public void AddPermissionOverwrite(PermissionOverwrite overwrite)
+        public void AddPermissionOverwrite(DiscordPermissionOverwrite overwrite)
         {
             Client.AddPermissionOverwrite(Id, overwrite);
-            List<PermissionOverwrite> overwrites = PermissionOverwrites.ToList();
+            List<DiscordPermissionOverwrite> overwrites = PermissionOverwrites.ToList();
             if (overwrites.Where(pe => pe.Id == overwrite.Id).Count() > 0)
                 overwrites[overwrites.IndexOf(overwrites.First(pe => pe.Id == overwrite.Id))] = overwrite;
             else
@@ -80,21 +80,11 @@ namespace Discord
 
             try
             {
-                List<PermissionOverwrite> overwrites = PermissionOverwrites.ToList();
+                List<DiscordPermissionOverwrite> overwrites = PermissionOverwrites.ToList();
                 overwrites.Remove(PermissionOverwrites.First(pe => pe.Id == id));
                 PermissionOverwrites = overwrites;
             }
             catch { }
-        }
-
-
-        /// <summary>
-        /// Removes a permission overwrite from a channel
-        /// </summary>
-        /// <param name="overwrite">The overwrite to delete</param>
-        public void RemovePermissionOverwrite(PermissionOverwrite overwrite)
-        {
-            RemovePermissionOverwrite(overwrite.Id);
         }
     }
 }

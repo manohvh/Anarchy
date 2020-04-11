@@ -2,6 +2,7 @@
 using Discord.Voice;
 using Leaf.xNet;
 using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -64,8 +65,14 @@ namespace Discord.Gateway
         public event ChannelHandler OnChannelUpdated;
         public event ChannelHandler OnChannelDeleted;
 
+#pragma warning disable CS0067
+        [Obsolete("OnUserJoinedVoiceChannel is obsolete. Use OnVoiceStateUpdated instead.", true)]
         public event VoiceStateHandler OnUserJoinedVoiceChannel;
+        [Obsolete("OnUserLeftVoiceChannel is obsolete. Use OnVoiceStateUpdated instead.", true)]
         public event VoiceStateHandler OnUserLeftVoiceChannel;
+#pragma warning restore CS0067
+
+        public event VoiceStateHandler OnVoiceStateUpdated;
 
         internal delegate void VoiceServerHandler(DiscordSocketClient client, DiscordVoiceServer server);
         internal event VoiceServerHandler OnVoiceServer;
@@ -195,6 +202,7 @@ namespace Discord.Gateway
                                 OnUserUpdated?.Invoke(this, new UserEventArgs(user));
                                 break;
                             case "GUILD_MEMBER_LIST_UPDATE":
+                                /*
                                 var args = new GuildMembersEventArgs(payload.Deserialize<GatewayUserMemberQueryResponse>());
 
                                 foreach (var member in args.Members)
@@ -203,7 +211,7 @@ namespace Discord.Gateway
                                     member.GuildId = args.GuildId;
                                 }
 
-                                OnGuildMembersReceived?.Invoke(this, args);
+                                OnGuildMembersReceived?.Invoke(this, args);*/
                                 break;
                             case "GUILD_CREATE":
                                 OnJoinedGuild?.Invoke(this, new GuildEventArgs(payload.Deserialize<Guild>().SetClient(this)));
@@ -230,12 +238,7 @@ namespace Discord.Gateway
                                 OnUserPresenceUpdated?.Invoke(this, new PresenceUpdatedEventArgs(payload.Deserialize<PresenceUpdate>()));
                                 break;
                             case "VOICE_STATE_UPDATE":
-                                VoiceState state = payload.Deserialize<VoiceState>().SetClient(this);
-
-                                if (state.ChannelId != null) // we might be able to do this to kinda change connection channel for DiscordVoiceClients
-                                    OnUserJoinedVoiceChannel?.Invoke(this, new VoiceStateEventArgs(state));
-                                else
-                                    OnUserLeftVoiceChannel?.Invoke(this, new VoiceStateEventArgs(state));
+                                OnVoiceStateUpdated?.Invoke(this, new VoiceStateEventArgs(payload.Deserialize<DiscordVoiceState>().SetClient(this)));
                                 break;
                             case "VOICE_SERVER_UPDATE":
                                 OnVoiceServer?.Invoke(this, payload.Deserialize<DiscordVoiceServer>());
@@ -289,11 +292,12 @@ namespace Discord.Gateway
                                 OnRelationshipRemoved?.Invoke(this, new RelationshipEventArgs(payload.Deserialize<Relationship>().SetClient(this)));
                                 break;
                             case "USER_CONNECTIONS_UPDATE":
-                                Task.Run(() =>
+                                try
                                 {
                                     DiscordProfile profile = this.User.GetProfile();
                                     OnProfileUpdated?.Invoke(this, new ProfileUpdatedEventArgs(profile));
-                                });
+                                }
+                                catch { }
                                 break;
                             case "MESSAGE_ACK": // triggered whenever another person logged into the account acknowledges a message
                                 break;
@@ -311,7 +315,17 @@ namespace Discord.Gateway
                         else
                             this.Resume();
 
-                        this.StartHeartbeatHandlersAsync(payload.Deserialize<JObject>().GetValue("heartbeat_interval").ToObject<uint>());
+                        int interval = payload.Deserialize<JObject>().GetValue("heartbeat_interval").ToObject<int>();
+
+                        try
+                        {
+                            while (true)
+                            {
+                                Socket.Send(GatewayOpcode.Heartbeat, this.Sequence);
+                                Thread.Sleep(interval);
+                            }
+                        }
+                        catch { }
                         break;
                 }
             });

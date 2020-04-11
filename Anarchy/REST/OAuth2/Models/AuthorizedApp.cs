@@ -16,14 +16,6 @@ namespace Discord
         [JsonProperty("application")]
         public OAuth2Application Application { get; private set; }
 
-        /// <summary>
-        /// Removes the authorized app from the current user
-        /// </summary>
-        public void Remove()
-        {
-            Client.RemoveAuthorizedApp(Id);
-        }
-
 
         public static implicit operator ulong(AuthorizedApp instance)
         {

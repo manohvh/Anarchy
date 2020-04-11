@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace Discord
 {
@@ -8,8 +7,7 @@ namespace Discord
 #pragma warning disable IDE1006
         private static Treturn modifyChannel<Treturn, TProperties>(this DiscordClient client, ulong channelId, TProperties properties) where TProperties : GuildChannelProperties where Treturn : GuildChannel
         {
-            return client.HttpClient.Patch($"/channels/{channelId}",
-                                JsonConvert.SerializeObject(properties)).DeserializeEx<Treturn>().SetClient(client);
+            return client.HttpClient.Patch($"/channels/{channelId}", properties).DeserializeEx<Treturn>().SetClient(client);
         }
 
 
@@ -31,8 +29,8 @@ namespace Discord
         /// <returns>The created <see cref="GuildChannel"/></returns>
         public static GuildChannel CreateGuildChannel(this DiscordClient client, ulong guildId, string name, ChannelType type, ulong? parentId = null)
         {
-            return client.HttpClient.Post($"/guilds/{guildId}/channels",
-                                JsonConvert.SerializeObject(new GuildChannelCreationProperties() { Name = name, Type = type, ParentId = parentId })).DeserializeEx<GuildChannel>().SetClient(client);
+            return client.HttpClient.Post($"/guilds/{guildId}/channels", new GuildChannelCreationProperties() { Name = name, Type = type, ParentId = parentId })
+                                .DeserializeEx<GuildChannel>().SetClient(client);
         }
 
 
@@ -77,9 +75,9 @@ namespace Discord
         /// </summary>
         /// <param name="channelId">ID of the channel</param>
         /// <param name="overwrite">The permission overwrite to add/edit</param>
-        public static void AddPermissionOverwrite(this DiscordClient client, ulong channelId, PermissionOverwrite overwrite)
+        public static void AddPermissionOverwrite(this DiscordClient client, ulong channelId, DiscordPermissionOverwrite overwrite)
         {
-            client.HttpClient.Put($"/channels/{channelId}/permissions/{overwrite.Id}", JsonConvert.SerializeObject(overwrite));
+            client.HttpClient.Put($"/channels/{channelId}/permissions/{overwrite.Id}", overwrite);
         }
 
 

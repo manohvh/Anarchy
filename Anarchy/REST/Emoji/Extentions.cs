@@ -14,8 +14,7 @@ namespace Discord
         /// <returns>The created <see cref="Emoji"/></returns>
         public static Emoji CreateGuildEmoji(this DiscordClient client, ulong guildId, EmojiProperties properties)
         {
-            Emoji emoji = client.HttpClient.Post($"/guilds/{guildId}/emojis", 
-                            JsonConvert.SerializeObject(properties)).Deserialize<Emoji>().SetClient(client);
+            Emoji emoji = client.HttpClient.Post($"/guilds/{guildId}/emojis", properties).Deserialize<Emoji>().SetClient(client);
             emoji.GuildId = guildId;
             return emoji;
         }

@@ -3,7 +3,7 @@ using System.Drawing;
 
 namespace Discord
 {
-    public class Role : MinimalRole
+    public class DiscordRole : MinimalRole
     {
         [JsonProperty("name")]
         public string Name { get; private set; }
@@ -35,10 +35,10 @@ namespace Discord
         private uint _permissions
         {
             get { return Permissions;  }
-            set { Permissions = new Permissions(value); }
+            set { Permissions = new DiscordPermissions(value); }
         }
 #pragma warning restore IDE0051, IDE1006
-        public Permissions Permissions { get; private set; }
+        public DiscordPermissions Permissions { get; private set; }
 
 
         /// <summary>
@@ -47,7 +47,7 @@ namespace Discord
         /// <param name="properties">Options for modifying the role</param>
         public new void Modify(RoleProperties properties)
         {
-            Role role = base.Modify(properties);
+            DiscordRole role = base.Modify(properties);
             Name = role.Name;
             Permissions = role.Permissions;
             Color = role.Color;
@@ -62,7 +62,7 @@ namespace Discord
         }
 
 
-        public static implicit operator ulong(Role instance)
+        public static implicit operator ulong(DiscordRole instance)
         {
             return instance.Id;
         }

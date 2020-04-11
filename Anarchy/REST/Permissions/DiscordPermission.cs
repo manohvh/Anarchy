@@ -3,7 +3,7 @@
 namespace Discord
 {
     [Flags]
-    public enum Permission
+    public enum DiscordPermission
     {
         CreateInstantInvite = 0x00000001,
         KickMembers = 0x00000002,

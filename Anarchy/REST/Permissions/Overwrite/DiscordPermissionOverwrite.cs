@@ -3,12 +3,12 @@ using System;
 
 namespace Discord
 {
-    public class PermissionOverwrite
+    public class DiscordPermissionOverwrite
     {
-        public PermissionOverwrite()
+        public DiscordPermissionOverwrite()
         {
-            Allow = new EditablePermissions(0);
-            Deny = new EditablePermissions(0);
+            Allow = new DiscordEditablePermissions(0);
+            Deny = new DiscordEditablePermissions(0);
         }
 
         [JsonProperty("id")]
@@ -32,21 +32,21 @@ namespace Discord
         private uint _deny
         {
             get { return Deny; }
-            set { Deny = new EditablePermissions(value); }
+            set { Deny = new DiscordEditablePermissions(value); }
         }
 
         [JsonIgnore]
-        public EditablePermissions Deny { get; set; }
+        public DiscordEditablePermissions Deny { get; set; }
 
 
         [JsonProperty("allow")]
         private uint _allow
         {
             get { return Allow; }
-            set { Allow = new EditablePermissions(value); }
+            set { Allow = new DiscordEditablePermissions(value); }
         }
         [JsonIgnore]
-        public EditablePermissions Allow { get; set; }
+        public DiscordEditablePermissions Allow { get; set; }
 #pragma warning restore IDE1006, IDE0051
 
 
@@ -56,7 +56,7 @@ namespace Discord
         }
 
 
-        public static implicit operator ulong(PermissionOverwrite instance)
+        public static implicit operator ulong(DiscordPermissionOverwrite instance)
         {
             return instance.Id;
         }

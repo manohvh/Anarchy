@@ -20,8 +20,7 @@ namespace Discord
             if (region != null)
                 properties.Region = region;
 
-            return client.HttpClient.Post("/guilds", JsonConvert.SerializeObject(properties))
-                                .Deserialize<Guild>().SetClient(client);
+            return client.HttpClient.Post("/guilds", properties).Deserialize<Guild>().SetClient(client);
         }
 
 
@@ -33,8 +32,7 @@ namespace Discord
         /// <returns>The modified <see cref="Guild"/></returns>
         public static Guild ModifyGuild(this DiscordClient client, ulong guildId, GuildProperties properties)
         {
-            return client.HttpClient.Patch($"/guilds/{guildId}", JsonConvert.SerializeObject(properties))
-                                .Deserialize<Guild>().SetClient(client);
+            return client.HttpClient.Patch($"/guilds/{guildId}", properties).Deserialize<Guild>().SetClient(client);
         }
 
 
@@ -45,6 +43,13 @@ namespace Discord
         public static void DeleteGuild(this DiscordClient client, ulong guildId)
         {
             client.HttpClient.Delete($"/guilds/{guildId}");
+        }
+
+
+
+        public static void SetGuildVanityUrl(this DiscordClient client, ulong guildId, string vanityCode)
+        {
+            client.HttpClient.Patch($"/guilds/{guildId}/vanity-url", $"{{\"code\":\"{vanityCode}\"}}");
         }
 
 

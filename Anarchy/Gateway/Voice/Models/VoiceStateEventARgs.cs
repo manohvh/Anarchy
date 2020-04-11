@@ -2,10 +2,10 @@
 {
     public class VoiceStateEventArgs
     {
-        public VoiceState State { get; private set; }
+        public DiscordVoiceState State { get; private set; }
 
 
-        internal VoiceStateEventArgs(VoiceState state)
+        internal VoiceStateEventArgs(DiscordVoiceState state)
         {
             State = state;
         }

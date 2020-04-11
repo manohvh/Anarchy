@@ -35,8 +35,8 @@ namespace Discord
         /// <returns>The created <see cref="Group"/></returns>
         public static Group CreateGroup(this DiscordClient client, List<ulong> recipients)
         {
-            return client.HttpClient.Post($"/users/@me/channels", 
-                JsonConvert.SerializeObject(new RecipientList() { Recipients = recipients })).DeserializeEx<Group>().SetClient(client);
+            return client.HttpClient.Post($"/users/@me/channels", new RecipientList() { Recipients = recipients })
+                                .DeserializeEx<Group>().SetClient(client);
         }
 
 
@@ -48,8 +48,7 @@ namespace Discord
         /// <returns>The modified <see cref="Group"/></returns>
         public static Group ModifyGroup(this DiscordClient client, ulong groupId, GroupProperties properties)
         {
-            return client.HttpClient.Patch($"/channels/{groupId}",
-                                JsonConvert.SerializeObject(properties)).DeserializeEx<Group>().SetClient(client);
+            return client.HttpClient.Patch($"/channels/{groupId}", properties).DeserializeEx<Group>().SetClient(client);
         }
 
 

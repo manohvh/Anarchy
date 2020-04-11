@@ -3,7 +3,7 @@ using System;
 
 namespace Discord.Gateway
 {
-    internal class Presence
+    public class Presence
     {
         [JsonProperty("status")]
         private string _status;
@@ -32,7 +32,7 @@ namespace Discord.Gateway
 
 
         [JsonProperty("afk")]
-        public bool Afk { get; set; }
+        private readonly bool _afk = true;
 
 
         public override string ToString()

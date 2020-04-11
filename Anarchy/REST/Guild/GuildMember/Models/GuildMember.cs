@@ -22,6 +22,10 @@ namespace Discord
             {
                 return new MinimalGuild(GuildId);
             }
+            internal set
+            {
+                GuildId = value.Id;
+            }
         }
 
 
@@ -138,7 +142,7 @@ namespace Discord
         /// <summary>
         /// Sets the member's roles
         /// </summary>
-        public void SetRoles(List<Role> roles)
+        public void SetRoles(List<DiscordRole> roles)
         {
             List<ulong> ids = new List<ulong>();
             foreach (var role in roles)
@@ -161,7 +165,7 @@ namespace Discord
         /// <summary>
         /// Adds a role to the guild member
         /// </summary>
-        public void AddRole(Role role)
+        public void AddRole(DiscordRole role)
         {
             AddRole(role.Id);
         }
@@ -180,7 +184,7 @@ namespace Discord
         /// <summary>
         /// Removes a role from the guild member
         /// </summary>
-        public void RemoveRole(Role role)
+        public void RemoveRole(DiscordRole role)
         {
             RemoveRole(role.Id);
         }

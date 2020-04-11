@@ -26,7 +26,7 @@ namespace Discord
         /// Modifies the role
         /// </summary>
         /// <param name="properties">Options for modifying the role</param>
-        public Role Modify(RoleProperties properties)
+        public DiscordRole Modify(RoleProperties properties)
         {
             return Client.ModifyGuildRole(GuildId, Id, properties);
         }

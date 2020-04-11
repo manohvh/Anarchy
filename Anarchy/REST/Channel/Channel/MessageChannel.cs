@@ -9,8 +9,6 @@ namespace Discord
         IReadOnlyList<Message> GetMessages(MessageFilters filters = null);
         IReadOnlyList<Message> GetPinnedMessages();
         void PinMessage(ulong messageId);
-        void PinMessage(Message message);
         void UnpinMessage(ulong messageId);
-        void UnpinMessage(Message message);
     }
 }

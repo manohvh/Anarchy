@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace Discord.Webhook
 {
@@ -14,8 +13,7 @@ namespace Discord.Webhook
         public static DiscordWebhook CreateChannelWebhook(this DiscordClient client, ulong channelId, DiscordWebhookProperties properties)
         {
             properties.ChannelId = channelId;
-            DiscordWebhook hook = client.HttpClient.Post($"/channels/{channelId}/webhooks",
-                                    JsonConvert.SerializeObject(properties)).Deserialize<DiscordWebhook>().SetClient(client);
+            DiscordWebhook hook = client.HttpClient.Post($"/channels/{channelId}/webhooks", properties).Deserialize<DiscordWebhook>().SetClient(client);
             hook.Modify(properties);
             return hook;
         }
@@ -29,8 +27,7 @@ namespace Discord.Webhook
         /// <returns>The modified webhook</returns>
         public static DiscordWebhook ModifyWebhook(this DiscordClient client, ulong webhookId, DiscordWebhookProperties properties)
         {
-            return client.HttpClient.Patch($"/webhooks/{webhookId}",
-                                JsonConvert.SerializeObject(properties)).Deserialize<DiscordWebhook>().SetClient(client);
+            return client.HttpClient.Patch($"/webhooks/{webhookId}", properties).Deserialize<DiscordWebhook>().SetClient(client);
         }
 
 
@@ -54,8 +51,7 @@ namespace Discord.Webhook
                     properties.AvatarUrl = profile.AvatarUrl;
             }
 
-            client.HttpClient.Post($"/webhooks/{webhookId}/{webhookToken}",
-                        JsonConvert.SerializeObject(properties));
+            client.HttpClient.Post($"/webhooks/{webhookId}/{webhookToken}", properties);
         }
 
 

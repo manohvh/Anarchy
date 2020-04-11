@@ -1,5 +1,4 @@
 ﻿using System.Drawing;
-using System.Net.Http;
 using Newtonsoft.Json;
 
 namespace Discord
@@ -40,7 +39,7 @@ namespace Discord
 
         public ApplicationBot AddBot()
         {
-            return Client.AddApplicationBot(Id);
+            return Client.AddBotToApplication(Id);
         }
 
 
@@ -59,10 +58,7 @@ namespace Discord
             if (IconId == null)
                 return null;
 
-#pragma warning disable IDE0067
-            return (Bitmap)new ImageConverter()
-                        .ConvertFrom(new HttpClient().GetByteArrayAsync($"https://cdn.discordapp.com/app-icons/{Id}/{IconId}.png").Result);
-#pragma warning restore IDE0067
+            return (Bitmap)new ImageConverter().ConvertFrom(Client.HttpClient.Get($"https://cdn.discordapp.com/app-icons/{Id}/{IconId}.png").ToBytes());
         }
 
 

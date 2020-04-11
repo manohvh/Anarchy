@@ -1,12 +1,10 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Text;
 
 namespace Discord
 {
@@ -22,8 +20,8 @@ namespace Discord
         /// <returns>The message</returns>
         public static Message SendMessage(this DiscordClient client, ulong channelId, string message, bool tts = false, Embed embed = null)
         {
-            return client.HttpClient.Post($"/channels/{channelId}/messages",
-                               JsonConvert.SerializeObject(new MessageProperties() { Content = message, Tts = tts, Embed = embed })).Deserialize<Message>().SetClient(client);
+            return client.HttpClient.Post($"/channels/{channelId}/messages", new MessageProperties() { Content = message, Tts = tts, Embed = embed })
+                                .Deserialize<Message>().SetClient(client);
         }
 
 
@@ -41,14 +39,15 @@ namespace Discord
             httpClient.DefaultRequestHeaders.Add("Authorization", client.Token);
 
             MultipartFormDataContent content = new MultipartFormDataContent();
-            content.Add(new StringContent(message), "content");
-            content.Add(new StringContent("0"), "nonce");
-            content.Add(new StringContent(tts ? "1" : "0"), "tts");
+            content.Add(new StringContent(JsonConvert.SerializeObject(new MessageProperties()
+            {
+                Content = message,
+                Tts = tts
+            })), "payload_json");
             content.Add(new ByteArrayContent(fileData), "file", fileName);
 
-            var resp = httpClient.PostAsync(client.HttpClient.ApiBaseEndpoint + $"/channels/{channelId}/messages", content).Result;
-
-            return resp.Content.ReadAsStringAsync().Result.Deserialize<Message>().SetClient(client);
+            return httpClient.PostAsync(client.HttpClient.ApiBaseEndpoint + $"/channels/{channelId}/messages", content).Result
+                                    .Content.ReadAsStringAsync().Result.Deserialize<Message>().SetClient(client);
         }
 
 

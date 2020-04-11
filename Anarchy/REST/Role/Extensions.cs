@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 namespace Discord
@@ -12,11 +11,11 @@ namespace Discord
         /// </summary>
         /// <param name="guildId">ID of the guild</param>
         /// <param name="properties">Options for modifying the created ole</param>
-        /// <returns>The created <see cref="Role"/></returns>
-        public static Role CreateGuildRole(this DiscordClient client, ulong guildId, RoleProperties properties = null)
+        /// <returns>The created <see cref="DiscordRole"/></returns>
+        public static DiscordRole CreateGuildRole(this DiscordClient client, ulong guildId, RoleProperties properties = null)
         {
-            Role role = client.HttpClient.Post($"/guilds/{guildId}/roles")
-                                    .Deserialize<Role>().SetClient(client);
+            DiscordRole role = client.HttpClient.Post($"/guilds/{guildId}/roles")
+                                    .Deserialize<DiscordRole>().SetClient(client);
             role.GuildId = guildId;
             if (properties != null)
                 role.Modify(properties);
@@ -30,11 +29,10 @@ namespace Discord
         /// <param name="guildId">ID of the guild</param>
         /// <param name="roleId">ID of the role</param>
         /// <param name="properties"></param>
-        /// <returns>The modified <see cref="Role"/></returns>
-        public static Role ModifyGuildRole(this DiscordClient client, ulong guildId, ulong roleId, RoleProperties properties)
+        /// <returns>The modified <see cref="DiscordRole"/></returns>
+        public static DiscordRole ModifyGuildRole(this DiscordClient client, ulong guildId, ulong roleId, RoleProperties properties)
         {
-            Role changed = client.HttpClient.Patch($"/guilds/{guildId}/roles/{roleId}", 
-                                        JsonConvert.SerializeObject(properties)).Deserialize<Role>().SetClient(client);
+            DiscordRole changed = client.HttpClient.Patch($"/guilds/{guildId}/roles/{roleId}", properties).Deserialize<DiscordRole>().SetClient(client);
             changed.GuildId = guildId;
             return changed;
         }
@@ -91,10 +89,10 @@ namespace Discord
         /// Gets a guild's roles
         /// </summary>
         /// <param name="guildId">ID of the guild</param>
-        public static IReadOnlyList<Role> GetGuildRoles(this DiscordClient client, ulong guildId)
+        public static IReadOnlyList<DiscordRole> GetGuildRoles(this DiscordClient client, ulong guildId)
         {
-            IReadOnlyList<Role> roles = client.HttpClient.Get($"/guilds/{guildId}/roles")
-                                                    .Deserialize<IReadOnlyList<Role>>().SetClientsInList(client);
+            IReadOnlyList<DiscordRole> roles = client.HttpClient.Get($"/guilds/{guildId}/roles")
+                                                    .Deserialize<IReadOnlyList<DiscordRole>>().SetClientsInList(client);
             foreach (var role in roles)
                 role.GuildId = guildId;
             return roles;
@@ -109,7 +107,7 @@ namespace Discord
         /// <param name="guildId">ID of the guild</param>
         /// <param name="roleId">ID of the role</param>
         /// <returns></returns>
-        public static Role GetGuildRole(this DiscordClient client, ulong guildId, ulong roleId)
+        public static DiscordRole GetGuildRole(this DiscordClient client, ulong guildId, ulong roleId)
         {
             return client.GetGuildRoles(guildId).First(r => r.Id == roleId);
         }

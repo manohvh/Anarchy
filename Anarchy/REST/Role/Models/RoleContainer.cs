@@ -19,7 +19,7 @@ namespace Discord.Gateway
 
 
         [JsonProperty("role")]
-        public Role Role { get; private set; }
+        public DiscordRole Role { get; private set; }
 
 
         public override string ToString()

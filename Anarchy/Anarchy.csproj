@@ -25,7 +25,7 @@
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <NoWarn>IDE1006</NoWarn>
+    <NoWarn>IDE1006, CS0649, CS0414</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -81,7 +81,6 @@
     <Compile Include="Gateway\GuildMember\Extensions.cs" />
     <Compile Include="Gateway\GuildMember\Models\GatewayUserMemberQuery.cs" />
     <Compile Include="Gateway\GuildMember\Models\GatewayUserMemberQueryResponse.cs" />
-    <Compile Include="Gateway\GuildMember\Models\MemberAmount.cs" />
     <Compile Include="Gateway\GuildMember\Models\MemberQuery.cs" />
     <Compile Include="Gateway\Presence\Activity\Activity.cs" />
     <Compile Include="Gateway\Presence\Activity\GameActivity.cs" />
@@ -94,7 +93,7 @@
     <Compile Include="Gateway\Presence\Presence\UpdatedEventArgs.cs" />
     <Compile Include="Gateway\Voice\Extensions.cs" />
     <Compile Include="Gateway\Voice\Models\DiscordVoiceServer.cs" />
-    <Compile Include="Gateway\Voice\Models\VoiceState.cs" />
+    <Compile Include="Gateway\Voice\Models\DiscordVoiceState.cs" />
     <Compile Include="Gateway\Voice\Models\VoiceStateChange.cs" />
     <Compile Include="Gateway\Voice\Models\VoiceStateEventARgs.cs" />
     <Compile Include="Multi\Controllable\Controllable.cs" />
@@ -113,6 +112,9 @@
     <Compile Include="REST\AuditLog\Models\Change.cs" />
     <Compile Include="REST\AuditLog\Models\Entry.cs" />
     <Compile Include="REST\AuditLog\Models\Filters.cs" />
+    <Compile Include="REST\Auth\AuthExtensions.cs" />
+    <Compile Include="REST\Auth\LoginRequest.cs" />
+    <Compile Include="REST\Auth\DiscordRegistration.cs" />
     <Compile Include="REST\Billing\BillingAddress.cs" />
     <Compile Include="REST\Billing\Extensions.cs" />
     <Compile Include="REST\Billing\Payment.cs" />
@@ -123,7 +125,7 @@
     <Compile Include="REST\Channel\Channel\Extensions.cs" />
     <Compile Include="REST\Channel\Channel\MessageChannel.cs" />
     <Compile Include="REST\Channel\Channel\MinimalChannel.cs" />
-    <Compile Include="REST\Channel\Channel\MinimalTextChannel.cs" />
+    <Compile Include="REST\Channel\Guild\Text\MinimalTextChannel.cs" />
     <Compile Include="REST\Channel\Channel\Properties\ChannelProperties.cs" />
     <Compile Include="REST\Channel\Channel\Properties\CreationProperties.cs" />
     <Compile Include="REST\Channel\Guild\Extensions.cs" />
@@ -161,13 +163,13 @@
     <Compile Include="REST\Gifts\DiscordGiftCode.cs" />
     <Compile Include="REST\Gifts\Extensions.cs" />
     <Compile Include="REST\Gifts\PurchaseOptions.cs" />
-    <Compile Include="REST\GuildMember\EventArgs\MemberEventArgs.cs" />
-    <Compile Include="REST\GuildMember\EventArgs\MembersEventArgs.cs" />
-    <Compile Include="REST\GuildMember\Extensions.cs" />
-    <Compile Include="REST\GuildMember\Models\GuildMember.cs" />
-    <Compile Include="REST\GuildMember\Models\GuildMemberList.cs" />
-    <Compile Include="REST\GuildMember\Models\GuildMemberProperties.cs" />
-    <Compile Include="REST\GuildMember\Models\GuildMemberUpdate.cs" />
+    <Compile Include="REST\Guild\GuildMember\EventArgs\MemberEventArgs.cs" />
+    <Compile Include="REST\Guild\GuildMember\EventArgs\MembersEventArgs.cs" />
+    <Compile Include="REST\Guild\GuildMember\Extensions.cs" />
+    <Compile Include="REST\Guild\GuildMember\Models\GuildMember.cs" />
+    <Compile Include="REST\Guild\GuildMember\Models\GuildMemberList.cs" />
+    <Compile Include="REST\Guild\GuildMember\Models\GuildMemberProperties.cs" />
+    <Compile Include="REST\Guild\GuildMember\Models\GuildMemberUpdate.cs" />
     <Compile Include="REST\Guild\Ban\Ban.cs" />
     <Compile Include="REST\Guild\Ban\BanContainer.cs" />
     <Compile Include="REST\Guild\Ban\UpdateEventArgs.cs" />
@@ -220,13 +222,14 @@
     <Compile Include="REST\OAuth2\Extensions.cs" />
     <Compile Include="REST\OAuth2\Models\ApplicationBot.cs" />
     <Compile Include="REST\OAuth2\Models\AuthorizedApp.cs" />
+    <Compile Include="REST\OAuth2\Models\DiscordBotAuthorization.cs" />
     <Compile Include="REST\OAuth2\Models\OAuth2Application.cs" />
-    <Compile Include="REST\Permissions\EditablePermissions.cs" />
-    <Compile Include="REST\Permissions\Overwrite\PermissionOverwrite.cs" />
+    <Compile Include="REST\Permissions\DiscordEditablePermissions.cs" />
+    <Compile Include="REST\Permissions\Overwrite\DiscordPermissionOverwrite.cs" />
     <Compile Include="REST\Permissions\Overwrite\Type.cs" />
-    <Compile Include="REST\Permissions\Permission.cs" />
-    <Compile Include="REST\Permissions\PermissionCalculator.cs" />
-    <Compile Include="REST\Permissions\Permissions.cs" />
+    <Compile Include="REST\Permissions\DiscordPermission.cs" />
+    <Compile Include="REST\Permissions\DiscordPermissionCalculator.cs" />
+    <Compile Include="REST\Permissions\DiscordPermissions.cs" />
     <Compile Include="REST\RateLimit\RateLimit.cs" />
     <Compile Include="REST\RateLimit\RateLimitException.cs" />
     <Compile Include="REST\Relationship\Extensions.cs" />
@@ -235,7 +238,7 @@
     <Compile Include="REST\Relationship\Models\RelationshipType.cs" />
     <Compile Include="REST\Role\Extensions.cs" />
     <Compile Include="REST\Role\Models\MinimalRole.cs" />
-    <Compile Include="REST\Role\Models\Role.cs" />
+    <Compile Include="REST\Role\Models\DiscordRole.cs" />
     <Compile Include="REST\Role\Models\RoleContainer.cs" />
     <Compile Include="REST\Role\Models\RoleEventArgs.cs" />
     <Compile Include="REST\Role\Models\RoleProperties.cs" />
@@ -266,6 +269,7 @@
     <Compile Include="REST\User\User\UserListEventArgs.cs" />
     <Compile Include="REST\Voice\Extensions.cs" />
     <Compile Include="REST\Voice\VoiceRegion.cs" />
+    <Compile Include="Webhook\DiscordWebhookType.cs" />
     <Compile Include="Webhook\WebhookMessageProperties.cs" />
     <Compile Include="Webhook\DiscordWebhookProfile.cs" />
     <Compile Include="Webhook\DiscordWebhookProperties.cs" />
@@ -282,10 +286,6 @@
     <Compile Include="Voice\Payloads\DiscordVoiceReady.cs" />
     <Compile Include="Voice\Payloads\DiscordSpeakingRequest.cs" />
     <Compile Include="Voice\Payloads\DiscordVoiceSpeaking.cs" />
-    <Compile Include="Voice\Snowflake\DisposableAction.cs" />
-    <Compile Include="Voice\Snowflake\IdWorker.cs" />
-    <Compile Include="Voice\Snowflake\InvalidSystemClock.cs" />
-    <Compile Include="Voice\Snowflake\TimeExtensions.cs" />
     <Compile Include="Voice\Wrappers\Opus\AudioApplication.cs" />
     <Compile Include="Voice\Wrappers\Opus\OpusApplication.cs" />
     <Compile Include="Voice\Wrappers\Opus\OpusCtl.cs" />

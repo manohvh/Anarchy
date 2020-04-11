@@ -23,10 +23,7 @@ namespace Discord
         /// <returns>The modified <see cref="Channel"/></returns>
         public static Channel ModifyChannel(this DiscordClient client, ulong channelId, string name)
         {
-            ChannelProperties properties = new ChannelProperties() { Name = name };
-
-            return client.HttpClient.Patch($"/channels/{channelId}",
-                    JsonConvert.SerializeObject(properties)).DeserializeEx<Channel>().SetClient(client);
+            return client.HttpClient.Patch($"/channels/{channelId}", new ChannelProperties() { Name = name }).DeserializeEx<Channel>().SetClient(client);
         }
 
 

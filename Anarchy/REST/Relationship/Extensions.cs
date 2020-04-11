@@ -20,17 +20,7 @@ namespace Discord
         /// </summary>
         public static void SendFriendRequest(this DiscordClient client, string username, uint discriminator)
         {
-            client.HttpClient.Post("/users/@me/relationships", 
-                        $"{{\"username\":\"{username}\",\"discriminator\":{discriminator}}}");
-        }
-
-
-        /// <summary>
-        /// Sends a friend request to a user
-        /// </summary>
-        public static void SendFriendRequest(this DiscordClient client, ulong userId)
-        {
-            client.HttpClient.Put($"/users/@me/relationships/{userId}");
+            client.HttpClient.Post("/users/@me/relationships", $"{{\"username\":\"{username}\",\"discriminator\":{discriminator}}}");
         }
 
 
@@ -40,8 +30,7 @@ namespace Discord
         /// <param name="userId">ID of the user</param>
         public static void BlockUser(this DiscordClient client, ulong userId)
         {
-            client.HttpClient.Put($"/users/@me/relationships/{userId}", 
-                        JsonConvert.SerializeObject(new Relationship() { Type = RelationshipType.Blocked }));
+            client.HttpClient.Put($"/users/@me/relationships/{userId}", new Relationship() { Type = RelationshipType.Blocked });
         }
 
 

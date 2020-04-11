@@ -63,7 +63,7 @@ namespace Discord
         /// <param name="properties">Things to change</param>
         public static void ModifyGuildMember(this DiscordClient client, ulong guildId, ulong userId, GuildMemberProperties properties)
         {
-            client.HttpClient.Patch($"/guilds/{guildId}/members/{userId}", JsonConvert.SerializeObject(properties));
+            client.HttpClient.Patch($"/guilds/{guildId}/members/{userId}", properties);
         }
 
 

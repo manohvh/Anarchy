@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace Discord
 {
@@ -11,17 +12,29 @@ namespace Discord
         }
 
 
-        //doesnt work btw
         /// <summary>
-        /// Removes an authorized app from the current user
+        /// Adds a bot to a server
         /// </summary>
-        /// <param name="appId">ID of the application</param>
-        public static void RemoveAuthorizedApp(this DiscordClient client, ulong appId)
+        /// <param name="botId">client_id from the oauth2 url</param>
+        /// <param name="guildId">the guild to add the bot to</param>
+        /// <param name="permissions">permissions the bot should have</param>
+        /// <param name="captchaKey">captcha key used to validate the request</param>
+        public static void AuthorizeBot(this DiscordClient client, ulong botId, ulong guildId, DiscordPermissions permissions, string captchaKey)
         {
-            client.HttpClient.Delete($"/oauth2/tokens/{appId}");
+            client.HttpClient.Post($"/oauth2/authorize?client_id={botId}&scope=bot", JsonConvert.SerializeObject(new DiscordBotAuthorization()
+            {
+                GuildId = guildId,
+                Permissions = permissions,
+                CaptchaKey = captchaKey
+            }));
         }
 
 
+        /// <summary>
+        /// Creates an OAuth2 application
+        /// </summary>
+        /// <param name="name">name for the application</param>
+        /// <returns></returns>
         public static OAuth2Application CreateApplication(this DiscordClient client, string name)
         {
             return client.HttpClient.Post("/oauth2/applications", $"{{\"name\":\"{name}\"}}")
@@ -29,13 +42,22 @@ namespace Discord
         }
 
 
-        public static ApplicationBot AddApplicationBot(this DiscordClient client, ulong appId)
+        /// <summary>
+        /// Adds a bot to the application
+        /// </summary>
+        /// <param name="appId">ID of the OAuth2 application</param>
+        /// <returns></returns>
+        public static ApplicationBot AddBotToApplication(this DiscordClient client, ulong appId)
         {
             return client.HttpClient.Post($"/oauth2/applications/{appId}/bot")
                                 .Deserialize<ApplicationBot>();
         }
 
 
+        /// <summary>
+        /// Deletes an OAuth2 application
+        /// </summary>
+        /// <param name="appId">ID of the application</param>
         public static void DeleteApplication(this DiscordClient client, ulong appId)
         {
             client.HttpClient.Delete($"/oauth2/applications/{appId}");

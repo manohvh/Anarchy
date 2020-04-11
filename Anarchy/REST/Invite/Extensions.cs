@@ -18,7 +18,7 @@ namespace Discord
             if (properties == null)
                 properties = new InviteProperties();
 
-            return client.HttpClient.Post($"/channels/{channelId}/invites", JsonConvert.SerializeObject(properties))
+            return client.HttpClient.Post($"/channels/{channelId}/invites", properties)
                                 .Deserialize<Invite>().SetClient(client);
         }
 

@@ -1,11 +1,5 @@
 ﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Discord.Webhook
 {
@@ -13,6 +7,10 @@ namespace Discord.Webhook
     {
         [JsonProperty("id")]
         public ulong Id { get; private set; }
+
+
+        [JsonProperty("type")]
+        public DiscordWebhookType Type { get; private set; }
 
 
         [JsonProperty("name")]
@@ -108,6 +106,14 @@ namespace Discord.Webhook
         public static implicit operator ulong(DiscordWebhook instance)
         {
             return instance.Id;
+        }
+
+
+        public static DiscordWebhook FromUrl(string webhookUrl)
+        {
+            string[] info = webhookUrl.Substring(webhookUrl.IndexOf("https://discordapp.com/api/webhooks/") + 35).Split('/');
+
+            return new DiscordClient(false).GetWebhook(ulong.Parse(info[0]), info[1]);
         }
     }
 }

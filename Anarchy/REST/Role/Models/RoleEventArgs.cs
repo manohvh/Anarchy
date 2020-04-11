@@ -2,9 +2,9 @@
 {
     public class RoleEventArgs
     {
-        public Role Role { get; private set; }
+        public DiscordRole Role { get; private set; }
 
-        internal RoleEventArgs(Role role)
+        internal RoleEventArgs(DiscordRole role)
         {
             Role = role;
         }
