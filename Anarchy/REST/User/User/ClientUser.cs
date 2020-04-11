@@ -48,7 +48,7 @@ namespace Discord
         {
             Username = user.Username;
             Discriminator = user.Discriminator;
-            AvatarId = user.AvatarId;
+            _avatarId = user.Avatar.Hash;
             Badges = user.Badges;
         }
 

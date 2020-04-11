@@ -31,7 +31,7 @@ namespace Discord
         public Image Icon
         {
             get { return _image.Image; }
-            set { _image.SetImage(value); ; }
+            set { _image.SetImage(value); }
         }
         #endregion
     }

@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using System;
 using System.Drawing;
 using System.Net.Http;
 
@@ -11,7 +12,16 @@ namespace Discord
 
 
         [JsonProperty("icon")]
-        public string IconId { get; protected set; }
+        protected string _iconId;
+
+
+        public DiscordGuildIconCDNImage Icon
+        {
+            get
+            {
+                return new DiscordGuildIconCDNImage(Id, _iconId);
+            }
+        }
 
 
         /// <summary>
@@ -21,7 +31,7 @@ namespace Discord
         {
             Guild guild = Client.GetGuild(Id);
             Name = guild.Name;
-            IconId = guild.IconId;
+            _iconId = guild.Icon.Hash;
         }
 
 
@@ -32,11 +42,11 @@ namespace Discord
         public void Modify(GuildProperties properties)
         {
             if (!properties.IconSet)
-                properties.IconId = IconId;
+                properties.IconId = Icon.Hash;
 
             Guild guild = Client.ModifyGuild(Id, properties);
             Name = guild.Name;
-            IconId = guild.IconId;
+            _iconId = guild.Icon.Hash;
         }
 
 
@@ -44,15 +54,10 @@ namespace Discord
         /// Gets the guild's icon
         /// </summary>
         /// <returns>The guild's icon (returns null if IconId is null)</returns>
+        [Obsolete("GetIcon is obsolete. Use Icon.Download() instead", true)]
         public Image GetIcon()
         {
-            if (IconId == null)
-                return null;
-
-#pragma warning disable IDE0067
-            return (Bitmap)new ImageConverter()
-                        .ConvertFrom(new HttpClient().GetByteArrayAsync($"https://cdn.discordapp.com/icons/{Id}/{IconId}.png").Result);
-#pragma warning restore IDE0067
+            return null;
         }
 
 

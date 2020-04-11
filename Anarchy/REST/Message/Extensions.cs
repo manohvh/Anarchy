@@ -38,13 +38,18 @@ namespace Discord
             HttpClient httpClient = new HttpClient(new HttpClientHandler() { Proxy = client.HttpClient.Proxy != null && client.HttpClient.Proxy.Type == Leaf.xNet.ProxyType.HTTP ? new WebProxy(client.HttpClient.Proxy.Host, client.HttpClient.Proxy.Port) : null });
             httpClient.DefaultRequestHeaders.Add("Authorization", client.Token);
 
-            MultipartFormDataContent content = new MultipartFormDataContent();
-            content.Add(new StringContent(JsonConvert.SerializeObject(new MessageProperties()
+            MultipartFormDataContent content = new MultipartFormDataContent
             {
-                Content = message,
-                Tts = tts
-            })), "payload_json");
-            content.Add(new ByteArrayContent(fileData), "file", fileName);
+                {
+                    new StringContent(JsonConvert.SerializeObject(new MessageProperties()
+                    {
+                        Content = message,
+                        Tts = tts
+                    })),
+                    "payload_json"
+                },
+                { new ByteArrayContent(fileData), "file", fileName }
+            };
 
             return httpClient.PostAsync(client.HttpClient.ApiBaseEndpoint + $"/channels/{channelId}/messages", content).Result
                                     .Content.ReadAsStringAsync().Result.Deserialize<Message>().SetClient(client);

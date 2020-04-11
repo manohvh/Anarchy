@@ -7,6 +7,7 @@ using WebSocketSharp;
 using System.Threading.Tasks;
 using System.Net.Sockets;
 using Leaf.xNet;
+using Newtonsoft.Json.Linq;
 
 namespace Discord.Voice
 {
@@ -97,18 +98,25 @@ namespace Discord.Voice
                 _udpClient.Close();
         }
 
+
+        private void SendSocketData<T>(DiscordVoiceOpcode op, T payload)
+        {
+            Socket.Send(JsonConvert.SerializeObject(new DiscordVoiceRequest<T>()
+            {
+                Opcode = op,
+                Payload = payload
+            }));
+        }
+
+
         public void SetSpeaking(bool speaking)
         {
-            Socket.Send(JsonConvert.SerializeObject(new DiscordVoiceRequest<DiscordSpeakingRequest>()
+            SendSocketData(DiscordVoiceOpcode.Speaking, new DiscordSpeakingRequest()
             {
-                Opcode = DiscordVoiceOpcode.Speaking,
-                Payload = new DiscordSpeakingRequest()
-                {
-                    Speaking = speaking ? 1 : 0,
-                    Delay = 0,
-                    SSRC = _ssrc
-                }
-            }));
+                Speaking = speaking ? 1 : 0,
+                Delay = 0,
+                SSRC = _ssrc
+            });
         }
 
 
@@ -210,35 +218,31 @@ namespace Discord.Voice
                 switch (payload.Opcode)
                 {
                     case DiscordVoiceOpcode.Ready:
-                        DiscordVoiceReady ready = payload.Data.ToObject<DiscordVoiceReady>();
+                        DiscordVoiceReady ready = payload.Deserialize<DiscordVoiceReady>();
 
                         _ssrc = ready.SSRC;
 
-                        Socket.Send(JsonConvert.SerializeObject(new DiscordVoiceRequest<DiscordVoiceProtocolSelection>()
+                        SendSocketData(DiscordVoiceOpcode.SelectProtocol, new DiscordVoiceProtocolSelection()
                         {
-                            Opcode = DiscordVoiceOpcode.SelectProtocol,
-                            Payload = new DiscordVoiceProtocolSelection()
+                            Protocol = "udp",
+                            ProtocolData = new DiscordVoiceProtocolData()
                             {
-                                Protocol = "udp",
-                                ProtocolData = new DiscordVoiceProtocolData()
-                                {
-                                    Host = ready.IP,
-                                    Port = ready.Port,
-                                    EncryptionMode = "xsalsa20_poly1305"
-                                }
+                                Host = ready.IP,
+                                Port = ready.Port,
+                                EncryptionMode = "xsalsa20_poly1305"
                             }
-                        }));
+                        });
 
                         _udpClient = new UdpClient(ready.IP, ready.Port);
                         break;
                     case DiscordVoiceOpcode.Speaking:
-                        OnUserSpeaking?.Invoke(this, payload.Data.ToObject<DiscordVoiceSpeaking>());
+                        OnUserSpeaking?.Invoke(this, payload.Deserialize<DiscordVoiceSpeaking>());
                         break;
                     case DiscordVoiceOpcode.SessionDescription:
                         List<byte> why = new List<byte>();
 
-                        foreach (var item in payload.Data.secret_key)
-                            why.Add(item.ToObject<byte>());
+                        foreach (byte item in payload.Deserialize<dynamic>().secret_key)
+                            why.Add(item);
 
                         _secretKey = why.ToArray();
 
@@ -246,28 +250,20 @@ namespace Discord.Voice
                         OnConnected?.Invoke(this, null);
                         break;
                     case DiscordVoiceOpcode.Hello:
-                        Socket.Send(JsonConvert.SerializeObject(new DiscordVoiceRequest<DiscordVoiceIdentify>()
+                        SendSocketData(DiscordVoiceOpcode.Identify, new DiscordVoiceIdentify()
                         {
-                            Opcode = Connected ? DiscordVoiceOpcode.Resume : DiscordVoiceOpcode.Identify,
-                            Payload = new DiscordVoiceIdentify()
-                            {
-                                GuildId = Server.GuildId,
-                                UserId = _client.User.Id,
-                                SessionId = _client.SessionId,
-                                Token = Server.Token
-                            }
-                        }));
+                            GuildId = Server.GuildId,
+                            UserId = _client.User.Id,
+                            SessionId = _client.SessionId,
+                            Token = Server.Token
+                        });
 
                         try
                         {
                             while (true)
                             {
-                                Socket.Send(JsonConvert.SerializeObject(new DiscordVoiceRequest<long>()
-                                {
-                                    Opcode = DiscordVoiceOpcode.Heartbeat,
-                                    Payload = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
-                                }));
-                                Thread.Sleep(payload.Data.heartbeat_interval);
+                                SendSocketData(DiscordVoiceOpcode.Heartbeat, DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
+                                Thread.Sleep((int)payload.Deserialize<dynamic>().heartbeat_interval);
                             }
                         }
                         catch { }

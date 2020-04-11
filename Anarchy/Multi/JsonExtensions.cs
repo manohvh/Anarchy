@@ -6,6 +6,7 @@ using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System.Reflection;
 using System;
+using Discord.Voice;
 
 namespace Discord
 {
@@ -53,6 +54,12 @@ namespace Discord
 
 
         internal static T Deserialize<T>(this GatewayResponse response)
+        {
+            return response.Data.ToString().Deserialize<T>();
+        }
+
+
+        internal static T Deserialize<T>(this DiscordVoiceResponse response)
         {
             return response.Data.ToString().Deserialize<T>();
         }

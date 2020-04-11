@@ -9,6 +9,7 @@
 - Added support for logging in by username + password, as well as registering new accounts.
 
 ### Improvements
+- Changed the way image hashes are dealt with. AvatarId, IconId etc. no longer exist, neither does their 'Get' methods. They've been replaced with a DiscordCDNImage instance (containg a Download method). Check source for more info.
 - Renamed some classes to their original names prepended with 'Discord' to avoid collision with other libraries.
 - Made changes to how command handling classes are structured. See example project 'CommandListener' for details.
 - Made changes to how the http client works, making it simpler to send HTTP requests to Discord.

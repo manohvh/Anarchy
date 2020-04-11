@@ -25,6 +25,6 @@ namespace Discord
 
 
         [JsonProperty("consent")]
-        private bool _consent = true;
+        private readonly bool _consent = true;
     }
 }

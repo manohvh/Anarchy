@@ -46,7 +46,7 @@ namespace Discord.Gateway
 
 
         [JsonProperty("guild_id")]
-        private readonly ulong? _guildId;
+        private ulong? _guildId;
 
         public MinimalGuild Guild
         {
@@ -56,6 +56,10 @@ namespace Discord.Gateway
                     return new MinimalGuild(_guildId.Value);
                 else
                     return null;
+            }
+            internal set
+            {
+                _guildId = value.Id;
             }
         }
 

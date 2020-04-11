@@ -28,6 +28,10 @@ namespace Discord.Gateway
         public uint MemberCount { get; private set; }
 
 
+        [JsonProperty("premium_subscription_count")]
+        public int NitroBoosts { get; private set; }
+
+
         private IReadOnlyList<GuildChannel> _channels;
         [JsonIgnore]
         public IReadOnlyList<GuildChannel> Channels
@@ -50,6 +54,25 @@ namespace Discord.Gateway
         public DateTime JoinedAt
         {
             get { return DiscordTimestamp.FromString(_joinedAt); }
+        }
+
+
+
+        private IReadOnlyList<DiscordVoiceState> _voiceStates;
+        [JsonProperty("voice_states")]
+        public IReadOnlyList<DiscordVoiceState> VoiceStates
+        {
+            get
+            {
+                return _voiceStates;
+            }
+            set
+            {
+                _voiceStates = value;
+
+                foreach (var state in _voiceStates)
+                    state.Guild = this;
+            }
         }
 
 

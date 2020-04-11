@@ -20,7 +20,16 @@ namespace Discord
 
 
         [JsonProperty("avatar")]
-        public string AvatarId { get; protected set; }
+        protected string _avatarId;
+
+
+        public DiscordUserAvatarCDNImage Avatar
+        {
+            get
+            {
+                return new DiscordUserAvatarCDNImage(Id, _avatarId);
+            }
+        }
 
 
         [JsonProperty("flags")]
@@ -71,7 +80,7 @@ namespace Discord
             User user = Client.GetUser(Id);
             Username = user.Username;
             Discriminator = user.Discriminator;
-            AvatarId = user.AvatarId;
+            _avatarId = user._avatarId;
         }
 
 
@@ -124,15 +133,10 @@ namespace Discord
         /// Gets the user's avatar
         /// </summary>
         /// <returns>The avatar (returns null if AvatarId is null)</returns>
+        [Obsolete("GetAvatar is obsolete. Use Avatar.Download() instead", true)]
         public Image GetAvatar()
         {
-            if (AvatarId == null)
-                return null;
-
-#pragma warning disable IDE0067
-            return (Bitmap)new ImageConverter()
-                        .ConvertFrom(new HttpClient().GetByteArrayAsync($"https://cdn.discordapp.com/avatars/{Id}/{AvatarId}.png").Result);
-#pragma warning restore IDE0067
+            return null;
         }
 
 

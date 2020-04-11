@@ -1,6 +1,5 @@
 ﻿using Discord.Webhook;
 using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
 
 namespace Discord
@@ -53,6 +52,29 @@ namespace Discord
         public void ChangeClientNickname(string nickname)
         {
             Client.ChangeClientNickname(Id, nickname);
+        }
+
+        /// <summary>
+        /// Gets the guild's templates
+        /// </summary>
+        public IReadOnlyList<DiscordGuildTemplate> GetTemplates()
+        {
+            return Client.GetGuildTemplates(Id);
+        }
+
+
+        /// <summary>
+        /// Creates a template for the guild
+        /// </summary>
+        public DiscordGuildTemplate CreateTemplate(string name, string description)
+        {
+            return Client.CreateGuildTemplate(Id, name, description);
+        }
+
+
+        public static DiscordGuildTemplate DeleteTemplate(string templateCode)
+        {
+            return Client.DeleteGuildTemplate(Id, templateCode);
         }
 
 

@@ -79,6 +79,10 @@ namespace Discord
         public ulong OwnerId { get; private set; }
 
 
+        [JsonProperty("mfa_level")]
+        public bool MfaRequired { get; private set; }
+
+
         /// <summary>
         /// Updates the guild's info
         /// </summary>
@@ -86,7 +90,7 @@ namespace Discord
         {
             Guild guild = Client.GetGuild(Id);
             Name = guild.Name;
-            IconId = guild.IconId;
+            _iconId = guild.Icon.Hash;
             Region = guild.Region;
             Roles = guild.Roles;
             Emojis = guild.Emojis;
@@ -104,17 +108,18 @@ namespace Discord
         public new void Modify(GuildProperties properties)
         {
             if (!properties.IconSet)
-                properties.IconId = IconId;
+                properties.IconId = Icon.Hash;
 
             Guild guild = Client.ModifyGuild(Id, properties);
             Name = guild.Name;
             Region = guild.Region;
-            IconId = guild.IconId;
+            _iconId = guild.Icon.Hash;
             VerificationLevel = guild.VerificationLevel;
             DefaultNotifications = guild.DefaultNotifications;
             OwnerId = guild.OwnerId;
             Roles = guild.Roles;
             Emojis = guild.Emojis;
+            VanityInvite = guild.VanityInvite;
         }
 
 

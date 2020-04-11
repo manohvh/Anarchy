@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Drawing;
 
 namespace Discord
@@ -32,6 +31,9 @@ namespace Discord
         /// <returns>The modified <see cref="Guild"/></returns>
         public static Guild ModifyGuild(this DiscordClient client, ulong guildId, GuildProperties properties)
         {
+            if (properties.VanityProperty.Set)
+                client.SetGuildVanityUrl(guildId, properties.VanityUrlCode);
+
             return client.HttpClient.Patch($"/guilds/{guildId}", properties).Deserialize<Guild>().SetClient(client);
         }
 

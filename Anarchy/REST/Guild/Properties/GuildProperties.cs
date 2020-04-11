@@ -122,5 +122,13 @@ namespace Discord
         {
             return NotificationsProperty.Set;
         }
+
+
+        internal readonly Property<string> VanityProperty = new Property<string>();
+        public string VanityUrlCode
+        {
+            get { return VanityProperty; }
+            set { VanityProperty.Value = value; }
+        }
     }
 }

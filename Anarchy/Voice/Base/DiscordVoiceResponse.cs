@@ -9,6 +9,6 @@ namespace Discord.Voice
 
 
         [JsonProperty("d")]
-        public dynamic Data { get; private set; }
+        public object Data { get; private set; }
     }
 }

@@ -25,7 +25,7 @@
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <NoWarn>IDE1006, CS0649, CS0414</NoWarn>
+    <NoWarn>IDE1006, CS0649, CS0414, IDE0051</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -119,6 +119,18 @@
     <Compile Include="REST\Billing\Extensions.cs" />
     <Compile Include="REST\Billing\Payment.cs" />
     <Compile Include="REST\Billing\PaymentMethod.cs" />
+    <Compile Include="REST\CDN\DiscordCDNImage.cs" />
+    <Compile Include="REST\CDN\DiscordCDNImageFormat.cs" />
+    <Compile Include="REST\CDN\DiscordHashedCDNImage.cs" />
+    <Compile Include="REST\CDN\Endpoints\DiscordAppIconCDNImage.cs" />
+    <Compile Include="REST\CDN\Endpoints\DiscordDefaultUserAvatarCDNImage.cs" />
+    <Compile Include="REST\CDN\Endpoints\DiscordEmojiCDNImage.cs" />
+    <Compile Include="REST\CDN\Endpoints\DiscordDiscoverySplashCDNImage.cs" />
+    <Compile Include="REST\CDN\Endpoints\DiscordGuildBannerCDNImage.cs" />
+    <Compile Include="REST\CDN\Endpoints\DiscordGuildIconCDNImage.cs" />
+    <Compile Include="REST\CDN\Endpoints\DiscordGuildSplashCDNImage.cs" />
+    <Compile Include="REST\CDN\Endpoints\DiscordTeamIconCDNImage.cs" />
+    <Compile Include="REST\CDN\Endpoints\DiscordUserAvatarCDNImage.cs" />
     <Compile Include="REST\Channel\Channel\Channel.cs" />
     <Compile Include="REST\Channel\Channel\ChannelEventArgs.cs" />
     <Compile Include="REST\Channel\Channel\ChannelType.cs" />
@@ -185,6 +197,9 @@
     <Compile Include="REST\Guild\Models\VerificationLevel.cs" />
     <Compile Include="REST\Guild\Properties\CreationProperties.cs" />
     <Compile Include="REST\Guild\Properties\GuildProperties.cs" />
+    <Compile Include="REST\Guild\Templates\DiscordGuildTemplate.cs" />
+    <Compile Include="REST\Guild\Templates\DiscordTemplateGuild.cs" />
+    <Compile Include="REST\Guild\Templates\GuildTemplateExtensions.cs" />
     <Compile Include="REST\HTTP\DiscordError.cs" />
     <Compile Include="REST\HTTP\DiscordHttpClient.cs" />
     <Compile Include="REST\HTTP\DiscordHttpError.cs" />

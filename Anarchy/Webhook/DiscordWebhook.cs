@@ -18,7 +18,15 @@ namespace Discord.Webhook
 
 
         [JsonProperty("avatar")]
-        public string AvatarId { get; private set; }
+        private string _avatarId;
+
+        public DiscordUserAvatarCDNImage Avatar
+        {
+            get
+            {
+                return new DiscordUserAvatarCDNImage(Id, _avatarId);
+            }
+        }
 
 
         [JsonProperty("user")]
@@ -44,7 +52,7 @@ namespace Discord.Webhook
         {
             DiscordWebhook hook = Client.GetWebhook(Id, Token);
             Name = hook.Name;
-            AvatarId = hook.AvatarId;
+            _avatarId = hook.Avatar.Hash;
             Creator = hook.Creator;
             ChannelId = hook.ChannelId;
         }
@@ -58,7 +66,7 @@ namespace Discord.Webhook
         {
             DiscordWebhook hook = Client.ModifyWebhook(Id, properties);
             Name = hook.Name;
-            AvatarId = hook.AvatarId;
+            _avatarId = hook.Avatar.Hash;
             ChannelId = hook.ChannelId;
         }
 
@@ -90,10 +98,7 @@ namespace Discord.Webhook
         /// <returns>The avatar (returns null if AvatarId is null)</returns>
         public Image GetAvatar()
         {
-            if (AvatarId == null)
-                return null;
-
-            return (Bitmap)new ImageConverter().ConvertFrom(Client.HttpClient.Get($"https://cdn.discordapp.com/avatars/{Id}/{AvatarId}.png").ToBytes());
+            return null;
         }
 
 
