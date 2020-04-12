@@ -12,11 +12,15 @@ namespace Discord.Commands
         private readonly Dictionary<string, Type> _commands;
         public string Prefix { get; private set; }
 
+        public Dictionary<string, string> Commands { get; private set; }
+
         public CommandHandler(string prefix, DiscordSocketClient client)
         {
             Prefix = prefix;
             client.OnMessageReceived += Client_OnMessageReceived;
+
             _commands = new Dictionary<string, Type>();
+            Commands = new Dictionary<string, string>();
 
             Assembly executable = Assembly.GetEntryAssembly();
 
@@ -32,6 +36,8 @@ namespace Discord.Commands
                             throw new NotImplementedException("All Anarchy command handlers must inherit Command");
 
                         _commands.Add(converted.Command, type);
+
+                        Commands.Add(converted.Command, converted.Description);
 
                         break;
                     }
@@ -57,7 +63,7 @@ namespace Discord.Commands
 
                             MethodInfo cmdMethod = cmd.Value.GetMethod("Execute");
 
-                            cmdMethod.Invoke(classInstance, new object[] { contents.Skip(1).ToArray(), args.Message });
+                            cmdMethod.Invoke(classInstance, new object[] { client, contents.Skip(1).ToArray(), args.Message });
                         }
                     }
                 }

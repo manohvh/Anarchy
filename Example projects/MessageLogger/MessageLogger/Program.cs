@@ -28,7 +28,7 @@ namespace MessageLogger
 
         private static void OnMessageReceived(DiscordSocketClient client, MessageEventArgs args)
         {
-            Console.WriteLine($"[{args.Message.ChannelId}/{args.Message.Author}] {args.Message.Content}");
+            Console.WriteLine($"[{args.Message.Channel.Id}/{args.Message.Author}] {args.Message.Content}");
         }
     }
 }

@@ -10,7 +10,6 @@ namespace Discord
         protected abstract string BaseEndpoint { get; set; }
         protected abstract List<DiscordCDNImageFormat> SupportedFormats { get; set; }
         public string Url { get; protected set; }
-
         public ulong Id { get; private set; }
 
         protected DiscordCDNImage(params object[] information)
@@ -28,7 +27,14 @@ namespace Discord
 
             string extension = format == DiscordCDNImageFormat.Any ? "" : $".{format.ToString().ToLower()}";
 
-            return (Bitmap)new ImageConverter().ConvertFrom(new HttpClient().GetByteArrayAsync(Url + extension).Result);
+            try
+            {
+                return (Bitmap)new ImageConverter().ConvertFrom(new HttpClient().GetByteArrayAsync(Url + extension).Result);
+            }
+            catch
+            {
+                return null;
+            }
         }
     }
 }

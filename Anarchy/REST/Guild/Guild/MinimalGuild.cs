@@ -72,7 +72,7 @@ namespace Discord
         }
 
 
-        public static DiscordGuildTemplate DeleteTemplate(string templateCode)
+        public DiscordGuildTemplate DeleteTemplate(string templateCode)
         {
             return Client.DeleteGuildTemplate(Id, templateCode);
         }

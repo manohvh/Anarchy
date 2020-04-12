@@ -1,4 +1,5 @@
 ﻿using Discord;
+using Discord.Gateway;
 using Discord.Commands;
 using System;
 
@@ -8,7 +9,7 @@ namespace CommandListener
     public class Example : Command
     {
         // This will be executed whenever the command ;example is sent through a channel
-        public override void Execute(string[] args, Message message)
+        public override void Execute(DiscordSocketClient client, string[] args, Message message)
         {
             Console.WriteLine("Author: " + message.Author.ToString());
 

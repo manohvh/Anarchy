@@ -14,8 +14,7 @@ namespace Discord
         public static Guild CreateGuild(this DiscordClient client, string name, Image icon = null, string region = null)
         {
             GuildCreationProperties properties = new GuildCreationProperties() { Name = name };
-            if (icon != null)
-                properties.Icon = icon;
+            properties.Icon = icon;
             if (region != null)
                 properties.Region = region;
 

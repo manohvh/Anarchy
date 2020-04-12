@@ -12,20 +12,30 @@ namespace GuildDuplicator
     {
         public OrganizedChannelList(IReadOnlyList<GuildChannel> channels)
         {
-            Categories = channels.Where(channel => channel.Type == ChannelType.Category).ToList();
-            TextChannels = channels.Where(channel => channel.Type == ChannelType.Text).ToList();
-            VoiceChannels = channels.Where(channel => channel.Type == ChannelType.Voice).ToList();
+            Categories = new List<GuildChannel>();
+            TextChannels = new List<TextChannel>();
+            VoiceChannels = new List<VoiceChannel>();
+
+            foreach (var channel in channels)
+            {
+                if (channel.Type == ChannelType.Category)
+                    Categories.Add(channel);
+                else if (channel.Type == ChannelType.News || channel.Type == ChannelType.Text || channel.Type == ChannelType.Store)
+                    TextChannels.Add(channel.ToTextChannel());
+                else if (channel.Type == ChannelType.Voice)
+                    VoiceChannels.Add(channel.ToVoiceChannel());
+            }
         }
 
         public List<GuildChannel> Categories { get; private set; }
-        public List<GuildChannel> TextChannels { get; private set; }
-        public List<GuildChannel> VoiceChannels { get; private set; }
+        public List<TextChannel> TextChannels { get; private set; }
+        public List<VoiceChannel> VoiceChannels { get; private set; }
     }
 
     struct RoleDupe
     {
-        public Role OurRole;
-        public Role TargetRole;
+        public DiscordRole OurRole;
+        public DiscordRole TargetRole;
     }
 
     struct CategoryDupe
@@ -47,8 +57,8 @@ namespace GuildDuplicator
             Guild targetGuild = client.GetGuild(ulong.Parse(Console.ReadLine()));
 
             Guild ourGuild = DuplicateGuild(client, targetGuild);
-            DeleteAllChannels(client, ourGuild);
-            DuplicateChannels(client, targetGuild, ourGuild, DuplicateRoles(client, targetGuild, ourGuild));
+            DeleteAllChannels(ourGuild);
+            DuplicateChannels(targetGuild, ourGuild, DuplicateRoles(targetGuild, ourGuild));
 
             Console.WriteLine("Done!");
             Console.ReadLine();
@@ -60,14 +70,14 @@ namespace GuildDuplicator
             Console.WriteLine("Duplicating guild...");
 
             //create the guild and modify it with settings from the target
-            Guild ourGuild = client.CreateGuild(guild.Name, guild.GetIcon(), guild.Region);
+            Guild ourGuild = client.CreateGuild(guild.Name, guild.Icon.Download(), guild.Region);
             ourGuild.Modify(new GuildProperties() { VerificationLevel = guild.VerificationLevel, DefaultNotifications = guild.DefaultNotifications });
 
             return ourGuild;
         }
 
 
-        private static void DeleteAllChannels(DiscordClient client, Guild guild)
+        private static void DeleteAllChannels(Guild guild)
         {
             Console.WriteLine("Deleting default guild channels...");
 
@@ -76,12 +86,11 @@ namespace GuildDuplicator
             {
                 channel.Delete();
                 Console.WriteLine($"Deleted {channel}");
-                Thread.Sleep(50);
             }
         }
 
 
-        private static void DuplicateChannels(DiscordClient client, Guild targetGuild, Guild ourGuild, List<RoleDupe> ourRoles)
+        private static void DuplicateChannels(Guild targetGuild, Guild ourGuild, List<RoleDupe> ourRoles)
         {
             OrganizedChannelList channels = new OrganizedChannelList(targetGuild.GetChannels());
 
@@ -89,10 +98,8 @@ namespace GuildDuplicator
 
             //duplicate category channels
             List<CategoryDupe> ourCategories = new List<CategoryDupe>();
-            foreach (var c in channels.Categories)
+            foreach (var category in channels.Categories)
             {
-                GuildChannel category = c.ToGuildChannel();
-
                 //create the category
                 GuildChannel ourCategory = ourGuild.CreateChannel(category.Name, ChannelType.Category);
                 ourCategory.Modify(new GuildChannelProperties() { Position = category.Position });
@@ -102,7 +109,7 @@ namespace GuildDuplicator
                     if (overwrite.Type == PermissionOverwriteType.Member)
                         continue;
 
-                    PermissionOverwrite ourOverwrite = overwrite;
+                    DiscordPermissionOverwrite ourOverwrite = overwrite;
                     ourOverwrite.Id = ourRoles.First(ro => ro.TargetRole.Id == overwrite.Id).OurRole.Id;
                     ourCategory.AddPermissionOverwrite(ourOverwrite);
                 }
@@ -115,8 +122,6 @@ namespace GuildDuplicator
                 ourCategories.Add(dupe);
 
                 Console.WriteLine($"Duplicated {category.Name}");
-
-                Thread.Sleep(50);
             }
 
             Console.WriteLine("Duplicating channels...");
@@ -126,7 +131,7 @@ namespace GuildDuplicator
             {
                 TextChannel channel = c.ToTextChannel();
 
-                TextChannel ourChannel = ourGuild.CreateTextChannel(channel.Name, channel.ParentId != null ? (ulong?)ourCategories.First(ca => ca.TargetCategory.Id == channel.ParentId).OurCategory.Id : null);
+                TextChannel ourChannel = ourGuild.CreateChannel(channel.Name, ChannelType.Text, channel.ParentId != null ? (ulong?)ourCategories.First(ca => ca.TargetCategory.Id == channel.ParentId).OurCategory.Id : null).ToTextChannel();
                 ourChannel.Modify(new TextChannelProperties() { Nsfw = channel.Nsfw, Position = channel.Position, Topic = channel.Topic, SlowMode = channel.SlowMode });
 
                 foreach (var overwrite in channel.PermissionOverwrites)
@@ -134,23 +139,19 @@ namespace GuildDuplicator
                     if (overwrite.Type == PermissionOverwriteType.Member)
                         continue;
 
-                    PermissionOverwrite ourOverwrite = overwrite;
+                    DiscordPermissionOverwrite ourOverwrite = overwrite;
                     ourOverwrite.Id = ourRoles.First(ro => ro.TargetRole.Id == overwrite.Id).OurRole.Id;
                     ourChannel.AddPermissionOverwrite(ourOverwrite);
                 }
 
                 Console.WriteLine($"Duplicated {channel.Name}");
-
-                Thread.Sleep(50);
             }
 
             //duplicate voice channels
-            foreach (var c in channels.VoiceChannels)
+            foreach (var channel in channels.VoiceChannels)
             {
-                VoiceChannel channel = c.ToVoiceChannel();
-
                 //create voice channels
-                VoiceChannel ourChannel = ourGuild.CreateVoiceChannel(channel.Name, channel.ParentId != null ? (ulong?)ourCategories.First(ca => ca.TargetCategory.Id == channel.ParentId).OurCategory.Id : null);
+                VoiceChannel ourChannel = ourGuild.CreateChannel(channel.Name, ChannelType.Voice, channel.ParentId != null ? (ulong?)ourCategories.First(ca => ca.TargetCategory.Id == channel.ParentId).OurCategory.Id : null).ToVoiceChannel();
                 ourChannel.Modify(new VoiceChannelProperties() { Bitrate = channel.Bitrate, Position = channel.Position, UserLimit = channel.UserLimit });
 
                 foreach (var overwrite in channel.PermissionOverwrites)
@@ -158,19 +159,17 @@ namespace GuildDuplicator
                     if (overwrite.Type == PermissionOverwriteType.Member)
                         continue;
 
-                    PermissionOverwrite ourOverwrite = overwrite;
+                    DiscordPermissionOverwrite ourOverwrite = overwrite;
                     ourOverwrite.Id = ourRoles.First(ro => ro.TargetRole.Id == overwrite.Id).OurRole.Id;
                     ourChannel.AddPermissionOverwrite(ourOverwrite);
                 }
 
                 Console.WriteLine($"Duplicated {channel.Name}");
-
-                Thread.Sleep(50);
             }
         }
 
 
-        private static List<RoleDupe> DuplicateRoles(DiscordClient client, Guild targetGuild, Guild ourGuild)
+        private static List<RoleDupe> DuplicateRoles(Guild targetGuild, Guild ourGuild)
         {
             List<RoleDupe> ourRoles = new List<RoleDupe>();
 
@@ -179,22 +178,22 @@ namespace GuildDuplicator
             //duplicate roles
             foreach (var role in targetGuild.GetRoles())
             {
-                RoleDupe dupe = new RoleDupe();
-                dupe.TargetRole = role;
+                RoleDupe dupe = new RoleDupe
+                {
+                    TargetRole = role
+                };
 
                 if (role.Name == "@everyone") //we don't wanna create another @everyone role, so we just modify ours instead
                 {
-                    Role ourRole = ourGuild.GetRoles().First(r => r.Name == "@everyone");
-                    ourRole.Modify(new RoleProperties() { Permissions = new EditablePermissions(role.Permissions), Color = role.Color, Mentionable = role.Mentionable, Seperated = role.Seperated });
+                    DiscordRole ourRole = ourGuild.GetRoles().First(r => r.Name == "@everyone");
+                    ourRole.Modify(new RoleProperties() { Permissions = new DiscordEditablePermissions(role.Permissions), Color = role.Color, Mentionable = role.Mentionable, Seperated = role.Seperated });
                     dupe.OurRole = ourRole;
                 }
                 else
-                    dupe.OurRole = ourGuild.CreateRole(new RoleProperties() { Name = role.Name, Permissions = new EditablePermissions(role.Permissions), Color = role.Color, Mentionable = role.Mentionable, Seperated = role.Seperated });
+                    dupe.OurRole = ourGuild.CreateRole(new RoleProperties() { Name = role.Name, Permissions = new DiscordEditablePermissions(role.Permissions), Color = role.Color, Mentionable = role.Mentionable, Seperated = role.Seperated });
                 ourRoles.Add(dupe);
 
                 Console.WriteLine($"Duplicated {role}");
-
-                Thread.Sleep(50);
             }
 
             return ourRoles;

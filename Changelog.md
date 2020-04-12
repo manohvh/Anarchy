@@ -7,6 +7,7 @@
 - Added RetryOnRateLimit property to DiscordHttpClient, which controls whether Anarchy should retry HTTP requests on ratelimits (enabled by default).
 - Added support for sending files through messages (SendFile).
 - Added support for logging in by username + password, as well as registering new accounts.
+- Added support for guild templating.
 
 ### Improvements
 - Changed the way image hashes are dealt with. AvatarId, IconId etc. no longer exist, neither does their 'Get' methods. They've been replaced with a DiscordCDNImage instance (containg a Download method). Check source for more info.

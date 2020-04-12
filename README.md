@@ -30,7 +30,7 @@ client.LeaveGuild(invite.Guild.Id);
 ```csharp
 DiscordClient client = new DiscordClient("your token here");
 
-TextChannel channel = client.GetTextChannel(420); //this is ONLY guild text channels, if you wanna get a DM use GetDMChannel(), if you want a group use GetGroup()
+TextChannel channel = client.GetChannel(420).ToTextChannel(); // will throw an error if the channel is not a guild text channel
 channel.TriggerTyping(); //This is optional
 channel.SendMessage("Hello, World");
 ```

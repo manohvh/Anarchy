@@ -194,6 +194,7 @@
     <Compile Include="REST\Guild\Models\DefaultNotifications.cs" />
     <Compile Include="REST\Guild\Models\GuildEventArgs.cs" />
     <Compile Include="REST\Guild\Models\PremiumTier.cs" />
+    <Compile Include="REST\Guild\Models\SocketGuildEventArgs.cs" />
     <Compile Include="REST\Guild\Models\VerificationLevel.cs" />
     <Compile Include="REST\Guild\Properties\CreationProperties.cs" />
     <Compile Include="REST\Guild\Properties\GuildProperties.cs" />

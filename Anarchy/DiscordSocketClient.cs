@@ -43,7 +43,8 @@ namespace Discord.Gateway
 
         public event UserHandler OnUserUpdated;
 
-        public event GuildHandler OnJoinedGuild;
+        public delegate void SocketGuildHandler(DiscordSocketClient client, SocketGuildEventArgs args);
+        public event SocketGuildHandler OnJoinedGuild;
         public event GuildHandler OnGuildUpdated;
         public event GuildHandler OnLeftGuild;
 
@@ -214,7 +215,7 @@ namespace Discord.Gateway
                                 OnGuildMembersReceived?.Invoke(this, args);*/
                                 break;
                             case "GUILD_CREATE":
-                                OnJoinedGuild?.Invoke(this, new GuildEventArgs(payload.Deserialize<Guild>().SetClient(this)));
+                                OnJoinedGuild?.Invoke(this, new SocketGuildEventArgs(payload.Deserialize<SocketGuild>().SetClient(this)));
                                 break;
                             case "GUILD_UPDATE":
                                 OnGuildUpdated?.Invoke(this, new GuildEventArgs(payload.Deserialize<Guild>().SetClient(this)));
